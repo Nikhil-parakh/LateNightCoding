@@ -1,0 +1,211 @@
+# --------------------------------------------------------------------
+# app.py
+# --------------------------------------------------------------------
+from flask import Flask, jsonify
+from config import Config
+from extensions import db, jwt, migrate
+
+# Import Blueprints
+from routes.auth_routes import auth_bp
+from routes.admin_routes import admin_bp
+from routes.company_routes import company_bp
+from routes.upload_routes import upload_bp
+
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object(Config)
+
+    # Initialize Extensions
+    db.init_app(app)
+    jwt.init_app(app)
+    migrate.init_app(app, db)
+
+    # Register Blueprints
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(admin_bp)
+    app.register_blueprint(company_bp)
+    app.register_blueprint(upload_bp)
+
+    # Global Error Handler
+    @app.errorhandler(500)
+    def internal_error(error):
+        return jsonify({"error": "Internal Server Error"}), 500
+
+    @app.errorhandler(404)
+    def not_found(error):
+        return jsonify({"error": "Resource not found"}), 404
+    
+    @app.route('/health', methods=['GET'])
+    def health():
+        return jsonify({"status": "OK"}), 200
+
+    return app
+
+if __name__ == '__main__':
+    app = create_app()
+    
+    # Optional: Create tables strictly for dev if not using migrate
+    with app.app_context():
+        db.create_all() 
+        # Seed Roles if empty
+        # from models import Role
+        # if not Role.query.first():
+        #     db.session.add_all([
+        #         Role(name='Admin'), 
+        #         Role(name='Company Manager'), 
+        #         Role(name='Employee')
+        #     ])
+        #     db.session.commit()
+            
+    app.run(debug=True, port=5000)
+
+--------------------------------------------------------------------
+
+# --------------------------------------------------------------------
+# config.py
+# --------------------------------------------------------------------
+
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+class Config:
+    SECRET_KEY = os.getenv('SECRET_KEY', 'dev_key')
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URI')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'jwt_dev_key')
+    BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+    UPLOAD_FOLDER = os.path.join(BASE_DIR, os.getenv('UPLOAD_FOLDER', 'uploads'))
+    MAX_CONTENT_LENGTH = int(os.getenv('MAX_CONTENT_LENGTH', 16 * 1024 * 1024))
+    JWT_TOKEN_LOCATION = ["headers"]
+    JWT_HEADER_NAME = "Authorization"
+    JWT_HEADER_TYPE = "Bearer"
+
+
+    # Ensure upload directory exists
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+--------------------------------------------------------------------
+
+# --------------------------------------------------------------------
+# extensions.py
+# --------------------------------------------------------------------
+from flask_sqlalchemy import SQLAlchemy
+from flask_jwt_extended import JWTManager
+from flask_migrate import Migrate
+
+db = SQLAlchemy()
+jwt = JWTManager()
+migrate = Migrate()
+
+--------------------------------------------------------------------
+
+# --------------------------------------------------------------------
+# requirements.txt
+# --------------------------------------------------------------------
+Flask==3.0.0
+Flask-SQLAlchemy==3.1.1
+Flask-Migrate==4.0.5
+Flask-JWT-Extended==4.6.0
+PyMySQL==1.1.0
+python-dotenv==1.0.0
+Werkzeug==3.0.1
+
+# 🔽 IMPORTANT FIXES
+numpy==1.26.4
+pandas==2.1.4
+openpyxl==3.1.2
+
+--------------------------------------------------------------------
+
+# --------------------------------------------------------------------
+# seed.py
+# --------------------------------------------------------------------
+import sys
+from app import create_app
+from extensions import db
+from models import Role, User
+
+def seed_database():
+    app = create_app()
+    
+    with app.app_context():
+        print("🌱 Seeding Database...")
+
+        # ---------------------------------------------------------
+        # 1. Create Roles
+        # ---------------------------------------------------------
+        roles_to_create = ['Admin', 'Company Manager', 'Employee']
+        created_roles = 0
+        
+        for role_name in roles_to_create:
+            role = Role.query.filter_by(name=role_name).first()
+            if not role:
+                new_role = Role(name=role_name)
+                db.session.add(new_role)
+                print(f"   > Role created: {role_name}")
+                created_roles += 1
+            else:
+                print(f"   > Role already exists: {role_name}")
+        
+        # Commit roles first to ensure IDs are generated
+        try:
+            db.session.commit()
+        except Exception as e:
+            print(f"Error seeding roles: {e}")
+            db.session.rollback()
+            return
+
+        # ---------------------------------------------------------
+        # 2. Create Default Admin User
+        # ---------------------------------------------------------
+        admin_email = "admin@system.com"
+        admin_user = User.query.filter_by(email=admin_email).first()
+        
+        if not admin_user:
+            # Fetch the Admin role object we just ensured exists
+            admin_role = Role.query.filter_by(name='Admin').first()
+            
+            if admin_role:
+                new_admin = User(
+                    username="SystemAdmin",
+                    email=admin_email,
+                    role_id=admin_role.id,
+                    company_id=None # Admins do not belong to a specific company
+                )
+                new_admin.set_password("AdminPass123!") # Change this in production
+                
+                db.session.add(new_admin)
+                try:
+                    db.session.commit()
+                    print(f"   > Admin User created: {admin_email} (Password: AdminPass123!)")
+                except Exception as e:
+                    print(f"Error creating admin: {e}")
+                    db.session.rollback()
+            else:
+                print("Error: Admin role could not be found.")
+        else:
+            print(f"   > Admin User already exists: {admin_email}")
+
+        print("✅ Seeding complete.")
+
+if __name__ == "__main__":
+    seed_database()
+
+--------------------------------------------------------------------
+
+# --------------------------------------------------------------------
+# .env
+# --------------------------------------------------------------------
+FLASK_APP=app.py
+FLASK_ENV=development
+SECRET_KEY=super-secret-production-key-change-me
+JWT_SECRET_KEY=my-super-secret-jwt-key
+
+# Database Connection (Update with your credentials)
+DATABASE_URI=mysql+pymysql://root:root@localhost/flask_sales_db
+
+# Upload Configuration
+UPLOAD_FOLDER=uploads
+MAX_CONTENT_LENGTH=16777216  # 16MB max size

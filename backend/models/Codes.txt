@@ -1,0 +1,229 @@
+# ------------------------------------
+# company.py
+# ------------------------------------
+
+from extensions import db
+from datetime import datetime
+
+class Company(db.Model):
+    __tablename__ = 'companies'
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    # Core details
+    name = db.Column(db.String(100), unique=True, nullable=False)
+    industry = db.Column(db.String(100), nullable=False)  # 🔹 NEW
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Verification & activation
+    is_active = db.Column(db.Boolean, default=False, nullable=False)
+    verified_at = db.Column(db.DateTime, nullable=True)
+
+    # Relationships
+    users = db.relationship('User', back_populates='company')
+    files = db.relationship('UploadedFile', back_populates='company')
+    sales = db.relationship('SalesData', back_populates='company')
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'industry': self.industry,
+            'is_active': self.is_active,
+            'created_at': self.created_at.isoformat(),
+            'verified_at': self.verified_at.isoformat() if self.verified_at else None
+        }
+
+
+# End of File --------------------------
+
+# ------------------------------------
+# otp_verification.py
+# ------------------------------------
+
+from extensions import db
+from datetime import datetime
+
+class OTPVerification(db.Model):
+    __tablename__ = "otp_verifications"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    email = db.Column(db.String(120), nullable=False, index=True)
+
+    # 🔐 OTP
+    otp_hash = db.Column(db.String(256), nullable=False)
+    expires_at = db.Column(db.DateTime, nullable=False)
+
+    # 🧠 TEMP REGISTRATION DATA
+    company_name = db.Column(db.String(100), nullable=False)
+    industry = db.Column(db.String(100), nullable=False)
+    manager_name = db.Column(db.String(80), nullable=False)
+    password_hash = db.Column(db.String(256), nullable=False)
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def is_expired(self):
+        return datetime.utcnow() > self.expires_at
+
+
+
+# End of File --------------------------
+
+# ------------------------------------
+# role.py
+# ------------------------------------
+
+from extensions import db
+
+class Role(db.Model):
+    __tablename__ = "roles"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), unique=True, nullable=False)
+
+    # Relationships
+    users = db.relationship("User", back_populates="role")
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name
+        }
+
+
+# End of File --------------------------
+
+# ------------------------------------
+# sales_data.py
+# ------------------------------------
+
+from extensions import db
+from datetime import datetime
+
+class SalesData(db.Model):
+    __tablename__ = 'sales_data'
+
+    id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.String(100), nullable=False)
+    product_name = db.Column(db.String(100), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    sale_date = db.Column(db.DateTime, default=datetime.utcnow)
+
+    file_id = db.Column(db.Integer, db.ForeignKey('uploaded_files.id'), nullable=False)
+    company_id = db.Column(db.Integer, db.ForeignKey('companies.id'), nullable=False)
+
+    # Relationships
+    source_file = db.relationship('UploadedFile', back_populates='sales_data')
+    company = db.relationship('Company', back_populates='sales')
+
+    def to_dict(self):
+        return {
+            'product': self.product_name,
+            'amount': self.amount,
+            'date': self.sale_date.isoformat()
+        }
+
+
+# End of File --------------------------
+
+# ------------------------------------
+# uploaded_file.py
+# ------------------------------------
+
+from extensions import db
+from datetime import datetime
+
+class UploadedFile(db.Model):
+    __tablename__ = 'uploaded_files'
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    filename = db.Column(db.String(255), nullable=False)
+    file_path = db.Column(db.String(500), nullable=False)
+    file_type = db.Column(db.String(20), nullable=False)  # csv / pdf
+
+    uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    uploaded_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    company_id = db.Column(db.Integer, db.ForeignKey('companies.id'), nullable=False)
+
+    # 🔥 THIS IS THE KEY FIX
+    sales_data = db.relationship(
+        'SalesData',
+        back_populates='source_file',
+        cascade='all, delete-orphan'
+    )
+
+    uploader = db.relationship('User', back_populates='uploaded_files')
+    company = db.relationship('Company', back_populates='files')
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "filename": self.filename,
+            "file_type": self.file_type,
+            "uploaded_at": self.uploaded_at.isoformat()
+        }
+
+
+# End of File --------------------------
+
+# ------------------------------------
+# user.py
+# ------------------------------------
+
+from extensions import db
+from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
+
+class User(db.Model):
+    __tablename__ = 'users'
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password_hash = db.Column(db.String(256), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    is_verified = db.Column(db.Boolean, default=False, nullable=False)
+    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'), nullable=False)
+    company_id = db.Column(db.Integer, db.ForeignKey('companies.id'), nullable=True)
+
+    # Relationships
+    role = db.relationship('Role', back_populates='users')
+    company = db.relationship('Company', back_populates='users')
+    uploaded_files = db.relationship('UploadedFile', back_populates='uploader')
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'email': self.email,
+            'role': self.role.name if self.role else None,
+            'company': self.company.name if self.company else None
+        }
+
+
+# End of File --------------------------
+
+# ------------------------------------
+# __init__.py
+# ------------------------------------
+
+from .role import Role
+from .company import Company
+from .user import User
+from .uploaded_file import UploadedFile
+from .sales_data import SalesData
+from .otp_verification import OTPVerification
+
+
+# End of File --------------------------
+

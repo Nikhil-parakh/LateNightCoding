@@ -1,0 +1,63 @@
+# ------------------------------------
+# decorators.py
+# ------------------------------------
+
+from functools import wraps
+from flask import jsonify
+from flask_jwt_extended import verify_jwt_in_request, get_jwt
+
+def role_required(allowed_roles):
+    """
+    Decorator to restrict access based on user roles.
+    allowed_roles: list of strings (e.g., ['Admin', 'Company Manager'])
+    """
+    def wrapper(fn):
+        @wraps(fn)
+        def decorator(*args, **kwargs):
+            verify_jwt_in_request()
+
+            claims = get_jwt()              # ✅ correct source
+            user_role = claims.get('role') # ✅ role comes from claims
+
+            if user_role not in allowed_roles:
+                return jsonify({
+                    "error": "Access forbidden: Insufficient permissions"
+                }), 403
+
+            return fn(*args, **kwargs)
+        return decorator
+    return wrapper
+
+
+def admin_required(fn):
+    return role_required(['Admin'])(fn)
+
+
+# End of File --------------------------
+
+# ------------------------------------
+# jwt_utils.py
+# ------------------------------------
+
+# Helper functions for JWT if needed, currently handled by flask-jwt-extended directly
+# This file is reserved for custom claim generators or token blocklist checks.
+
+# End of File --------------------------
+
+# ------------------------------------
+# validators.py
+# ------------------------------------
+
+import re
+
+def validate_email(email):
+    regex = r'^\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+    return re.match(regex, email)
+
+ALLOWED_EXTENSIONS = {"csv", "pdf"}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+# End of File --------------------------
+

@@ -1,0 +1,499 @@
+ADMIN ROUTES--------------------------------
+
+(Admin Login)
+
+1. POST - http://127.0.0.1:5000/login
+
+Body:
+{
+    "email":"admin@system.com",
+    "password": "AdminPass123!"
+}
+
+Response:
+{
+    "role": "Admin",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc3MTg0Njg0OSwianRpIjoiZWJiNTM4NTEtYjljYi00N2M2LWFhMzYtZWQ0NzU5YjY1Y2MxIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6ImFkbWluQHN5c3RlbS5jb20iLCJuYmYiOjE3NzE4NDY4NDksImNzcmYiOiIwNTQzZDU1My0xYzdjLTRkNmUtYjI4MS1kN2MzMDQwNmVlMGUiLCJleHAiOjE3NzE4NDc3NDksInVzZXJfaWQiOjEsInJvbGUiOiJBZG1pbiIsImNvbXBhbnlfaWQiOm51bGx9.Z48tmqtTkVa1beFk6lFusesYdy070x8Y8o--mGxdhmo"
+}
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+(Admin Dashboard)
+
+2. GET - http://127.0.0.1:5000/admin/home
+
+Authorization: Bearer Token
+
+Response:
+{
+    "platform_overview": {
+        "total_active_companies": 5,
+        "total_cleaned_files_generated": 1,
+        "total_files_uploaded": 1,
+        "total_registered_companies": 5,
+        "total_rows_stored": 100,
+        "total_suspended_companies": 0,
+        "total_users_in_system": 7
+    }
+}
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+(Get all companies)
+
+3. GET - http://127.0.0.1:5000/admin/companies
+
+Authorization: Bearer Token
+
+Response:
+{
+    "companies": [
+        {
+            "company_id": 5,
+            "company_name": "Demo company 5",
+            "data_volume": 100,
+            "industry": "clothes",
+            "registration_date": "Tue, 17 Feb 2026 12:24:19 GMT",
+            "status": "Active",
+            "uploads": 1
+        },
+        {
+            "company_id": 4,
+            "company_name": "Demo company 4",
+            "data_volume": 0,
+            "industry": "clothes",
+            "registration_date": "Tue, 17 Feb 2026 12:23:53 GMT",
+            "status": "Active",
+            "uploads": 0
+        }
+    ],
+    "pagination": {
+        "current_page": 1,
+        "has_next": true,
+        "has_prev": false,
+        "per_page": 2,
+        "total_pages": 3,
+        "total_records": 5
+    }
+}
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+(Suspend particular company)
+
+4. PATCH - http://127.0.0.1:5000/admin/company/<EmployeeID>/suspend
+
+Authorization: Bearer Token
+
+Response:
+{
+    "message": "Company suspended successfully"
+}
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+(Recover particular company)
+
+5. PATCH - http://127.0.0.1:5000/admin/company/<EmployeeID>/recover
+
+Authorization: Bearer Token
+
+Response:
+{
+    "message": "Company recovered successfully"
+}
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+(Audit Logs (last 15 activity on the platform)).
+
+6. GET - http://127.0.0.1:5000/admin/audit-logs
+
+Authorization: Bearer Token
+
+Response:
+{
+    "logs": [
+        {
+            "created_at": "Mon, 23 Feb 2026 12:09:51 GMT",
+            "event_type": "LOGIN_SUCCESS",
+            "message": "User admin@system.com logged in successfully (Role: Admin)"
+        },
+        {
+            "created_at": "Mon, 23 Feb 2026 11:51:33 GMT",
+            "event_type": "RECOVER",
+            "message": "Admin recovered company Demo company 5"
+        },
+        {
+            "created_at": "Mon, 23 Feb 2026 11:44:12 GMT",
+            "event_type": "SUSPEND",
+            "message": "Admin suspended company Demo company 5"
+        },
+        {
+            "created_at": "Mon, 23 Feb 2026 11:40:50 GMT",
+            "event_type": "LOGIN_SUCCESS",
+            "message": "User admin@system.com logged in successfully (Role: Admin)"
+        },
+        {
+            "created_at": "Mon, 23 Feb 2026 07:29:48 GMT",
+            "event_type": "RECOVER",
+            "message": "Admin recovered company Demo company 5"
+        },
+        {
+            "created_at": "Mon, 23 Feb 2026 07:29:32 GMT",
+            "event_type": "SUSPEND",
+            "message": "Admin suspended company Demo company 5"
+        },
+        {
+            "created_at": "Mon, 23 Feb 2026 07:25:50 GMT",
+            "event_type": "LOGIN_SUCCESS",
+            "message": "User admin@system.com logged in successfully (Role: Admin)"
+        },
+        {
+            "created_at": "Sun, 22 Feb 2026 16:57:37 GMT",
+            "event_type": "LOGIN_SUCCESS",
+            "message": "User emp1_1@company1.com logged in successfully (Role: Employee)"
+        },
+        {
+            "created_at": "Sun, 22 Feb 2026 16:57:20 GMT",
+            "event_type": "LOGIN_FAILED",
+            "message": "Invalid credentials for email: emp1_1@company2.com"
+        },
+        {
+            "created_at": "Sun, 22 Feb 2026 16:55:04 GMT",
+            "event_type": "LOGIN_SUCCESS",
+            "message": "User m5@gmail.com logged in successfully (Role: Company Manager)"
+        },
+        {
+            "created_at": "Sun, 22 Feb 2026 16:54:50 GMT",
+            "event_type": "LOGIN_FAILED",
+            "message": "Invalid credentials for email: emp2_1@company2.com"
+        },
+        {
+            "created_at": "Fri, 20 Feb 2026 14:50:49 GMT",
+            "event_type": "LOGIN_SUCCESS",
+            "message": "User admin@system.com logged in successfully (Role: Admin)"
+        },
+        {
+            "created_at": "Wed, 18 Feb 2026 19:32:29 GMT",
+            "event_type": "RECOVER",
+            "message": "Admin recovered company Demo company 5"
+        },
+        {
+            "created_at": "Wed, 18 Feb 2026 19:32:18 GMT",
+            "event_type": "SUSPEND",
+            "message": "Admin suspended company Demo company 5"
+        },
+        {
+            "created_at": "Wed, 18 Feb 2026 19:31:40 GMT",
+            "event_type": "LOGIN_SUCCESS",
+            "message": "User admin@system.com logged in successfully (Role: Admin)"
+        }
+    ]
+}
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+MANAGER ROUTES--------------------------------
+
+Company Registeration-------
+
+7. POST - http://127.0.0.1:5000/company/register-company
+
+Authorization: NONE
+
+Body:
+{
+  "company_name": "Demo company 5",
+  "industry": "clothes",
+  "manager_name": "manager5",
+  "email": "m5@gmail.com",
+  "password": "manager!"
+}
+
+Response:
+{
+    "message": "OTP sent to email"
+}
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+( OTP verification )
+
+8. POST - http://127.0.0.1:5000/company/verify-otp
+
+Authorization: NONE
+
+Body:
+{
+  "email": "m5@gmail.com",
+  "otp": "646029"
+}
+
+Response:
+{
+    "message": "Company Registered successfully"
+}
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Manager Login
+
+9. POST - http://127.0.0.1:5000/login
+
+Authorization: NONE
+
+Body:
+{
+  "email": "m5@gmail.com",
+  "password": "manager!"
+}
+
+Response:
+{
+    "role": "Company Manager",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc3MTg0OTMxMCwianRpIjoiYjc5ZTZhNjktZDEyNi00MTQ4LThhYmMtZTNiYTAzZGFhZjVhIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6Im01QGdtYWlsLmNvbSIsIm5iZiI6MTc3MTg0OTMxMCwiY3NyZiI6IjI5MGMwYTc5LWVmMGMtNDRhYi04NTI0LTNhNDY2ZWI1YTJlZSIsImV4cCI6MTc3MTg1MDIxMCwidXNlcl9pZCI6Niwicm9sZSI6IkNvbXBhbnkgTWFuYWdlciIsImNvbXBhbnlfaWQiOjV9.ig_oplTKhWKwshgjKB5KA77RIup5EVGAJNSku3Dy6W4"
+}
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+add employee--------
+
+10. POST - http://127.0.0.1:5000/company/employees
+
+Authorization: Bearer Token
+
+Body:
+{
+  "username": "emp1_2",
+  "email": "emp_1@company2.com",
+  "password": "Emp1_1!"
+}
+
+Response:
+{
+    "employee": {
+        "company": "Demo company 5",
+        "email": "emp_1@company2.com",
+        "id": 8,
+        "role": "Employee",
+        "username": "emp1_2"
+    },
+    "message": "Employee added"
+}
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Get all employees--------
+
+11. GET - http://127.0.0.1:5000/company/employees
+
+Authorization: Bearer Token
+
+Response:
+{
+    "count": 2,
+    "employees": [
+        {
+            "created_at": "2026-02-23T12:26:06",
+            "email": "emp_1@company2.com",
+            "id": 8,
+            "username": "emp1_2"
+        },
+        {
+            "created_at": "2026-02-22T16:56:19",
+            "email": "emp1_1@company1.com",
+            "id": 7,
+            "username": "emp1_1"
+        }
+    ]
+}
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Remove Employee
+
+12. DELETE - http://127.0.0.1:5000/company/employees/<EmployeeId>
+
+Authorization: Bearer Token
+
+Response:
+{
+    "message": "Employee removed successfully"
+}
+
+if not found Response:
+{
+    "error": "Employee not found"
+}
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Employee ROUTES--------------------------------
+
+13. POST - http://127.0.0.1:5000/login
+
+Authorization: NONE
+
+Body:
+{
+  "email": "emp1_1@company1.com",
+  "password": "Emp1_1!"
+}
+
+Response:
+{
+    "role": "Employee",
+    "token": "eyJhbGciOiJIUzI1NiIsIn...........-v4"
+}
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+( File upload )
+
+14. POST - http://127.0.0.1:5000/employee/upload
+
+Authorization: NONE
+
+Body:
+{
+    form-data: file type, uploaded_file.csv
+}
+
+(Scenerio One: when first user of the company upload sales data).
+Response:
+{
+    "detected_columns": [
+        "item_id",
+        "order_no",
+        "order_dt",
+        "item_name",
+        "item_type",
+        "units_sold",
+        "price_per_unit",
+        "bill_value",
+        "customer_city",
+        "customer_state",
+        "order_mode",
+        "customer_age",
+        "discount_pct",
+        "payment_type",
+        "return_flag",
+        "brand_name"
+    ],
+    "message": "Column mapping required",
+    "optional_columns": [
+        "product_name",
+        "category",
+        "sales_channel",
+        "state",
+        "city"
+    ],
+    "required_columns": [
+        "order_id",
+        "order_date",
+        "product_id",
+        "quantity",
+        "unit_price",
+        "payment_mode"
+    ],
+    "system_optional_mapping": {
+        "product_name": "item_name"
+    },
+    "uploaded_file_id": 3
+}
+
+==============================================================================================
+
+(Scenerio two: if in second upload same columns are detected then no request for columns mapping! )
+Response: 
+{
+    "cleaning_report": {
+        "message": "CSV cleaned, stored & cleaned file saved successfully",
+        "stats": {
+            "cleaned_csv_path": "uploads\\cleaned_files\\cleaned_2.csv",
+            "duplicates_removed": 1,
+            "invalid_rows_removed": 5,
+            "new_rows_inserted": 0,
+            "rows_after": 100,
+            "rows_before": 106
+        }
+    },
+    "message": "File auto-processed using saved mapping"
+}
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Employee ROUTES--------------------------------
+	
+Column mapping
+
+15. POST - http://127.0.0.1:5000/employee/map-columns
+
+Authorization: Bearer token
+
+Body:
+{
+  "uploaded_file_id": 1,
+
+  "required_mapping": {
+    "order_id": "order_no",
+    "order_date": "order_dt",
+    "product_id": "item_id",
+    "quantity": "units_sold",
+    "unit_price": "price_per_unit",
+    "payment_mode": "payment_type"
+  },
+
+  "optional_mapping": {
+    "category": "item_type",
+    "city": "customer_city",
+    "state": "customer_state",
+    "sales_channel": "order_mode"
+  },
+
+  "system_optional_mapping": {
+    "product_name": "item_name"
+  }
+}
+
+Response:
+{
+    "cleaning_report": {
+        "message": "CSV cleaned, stored & cleaned file saved successfully",
+        "stats": {
+            "cleaned_csv_path": "uploads\\cleaned_files\\cleaned_4.csv",
+            "duplicates_removed": 1,
+            "invalid_rows_removed": 5,
+            "new_rows_inserted": 100,
+            "rows_after": 100,
+            "rows_before": 106
+        }
+    },
+    "message": "CSV cleaned, stored & mapping saved successfully"
+}
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Available charts...
+
+16. GET - http://localhost:5000/employee/available-charts
+
+Authorization: bearer token
+
+Response:
+{
+    "available_charts": [
+        "revenue_over_time",
+        "sales_volume_over_time",
+        "online_vs_offline",
+        "top_10_products",
+        "sales_by_state",
+        "category_performance",
+        "payment_mode_distribution"
+    ]
+}

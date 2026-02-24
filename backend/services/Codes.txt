@@ -1,0 +1,441 @@
+# ------------------------------------
+# auth_service.py
+# ------------------------------------
+
+from models import User, Role, Company
+from extensions import db
+from flask_jwt_extended import create_access_token
+from werkzeug.security import check_password_hash
+
+
+def register_user(data):
+    if not data:
+        return {"error": "Invalid request body"}, 400
+
+    # Extract data FIRST
+    username = data.get('username')
+    email = data.get('email')
+    password = data.get('password')
+    role_name = data.get('role')
+    company_id = data.get('company_id')
+
+    # Validate required fields
+    if not all([username, email, password, role_name]):
+        return {"error": "Missing required fields"}, 400
+
+    # Check existing user
+    if User.query.filter(
+        (User.username == username) | (User.email == email)
+    ).first():
+        return {"error": "User already exists"}, 400
+
+    # Validate role
+    role = Role.query.filter_by(name=role_name).first()
+    if not role:
+        return {"error": "Invalid role specified"}, 400
+
+    # Company validation
+    if role.name in ['Company Manager', 'Employee'] and not company_id:
+        return {"error": "Company ID required for this role"}, 400
+
+    if role.name == 'Admin':
+        company_id = None  # Admins don't belong to a company
+
+    # Password validation
+    if len(password) < 5:
+        return {"error": "Password too short"}, 400
+
+    # Create user
+    new_user = User(
+        username=username,
+        email=email,
+        role_id=role.id,
+        company_id=company_id
+    )
+    new_user.set_password(password)
+
+    db.session.add(new_user)
+    db.session.commit()
+
+    return {"message": "User registered successfully"}, 201
+
+def login_user(data):
+    if not data:
+        return {"error": "Invalid request body"}, 400
+
+    email = data.get("email")
+    password = data.get("password")
+
+    if not email or not password:
+        return {"error": "Email and password required"}, 400
+
+    user = User.query.filter_by(email=email).first()
+
+    if not user or not user.check_password(password):
+        return {"error": "Invalid credentials"}, 401
+
+    # 🔐 Company Manager rules
+    if user.role.name == "Company Manager":
+        if not user.is_verified:
+            return {"error": "Email not verified. Please verify OTP."}, 403
+        if not user.company or not user.company.is_active:
+            return {"error": "Company not activated yet."}, 403
+
+    # 🔐 Employee rules
+    if user.role.name == "Employee":
+        if not user.company or not user.company.is_active:
+            return {"error": "Company not active"}, 403
+
+    access_token = create_access_token(
+        identity=user.email,
+        additional_claims={
+            "user_id": user.id,
+            "role": user.role.name,
+            "company_id": user.company_id
+        }
+    )
+
+    return {
+        "token": access_token,
+        "role": user.role.name
+    }, 200
+
+
+# End of File --------------------------
+
+# ------------------------------------
+# data_cleaning_service.py
+# ------------------------------------
+
+import pandas as pd
+import re
+from datetime import datetime
+from extensions import db
+from models import SalesData
+
+# =====================================================
+# SYSTEM LOGICAL COLUMNS
+# =====================================================
+
+LOGICAL_REQUIRED_COLUMNS = [
+    "order_id",        # 🔥 DUPLICATION IDENTIFIER
+    "product_name",
+    "amount",
+    "sale_date"
+]
+
+OPTIONAL_COLUMNS = ["city", "channel"]
+
+VALID_CHANNELS = ["online", "offline"]
+
+CHANNEL_MAPPING = {
+    "online": "online",
+    "web": "online",
+    "website": "online",
+    "online store": "online",
+    "ecommerce": "online",
+
+    "offline": "offline",
+    "store": "offline",
+    "retail": "offline",
+    "shop": "offline"
+}
+
+# =====================================================
+# PHASE 1️⃣ – READ CSV HEADERS ONLY
+# =====================================================
+
+def detect_csv_columns(file_path):
+    df = pd.read_csv(file_path, nrows=0)
+    return list(df.columns)
+
+# =====================================================
+# HELPER CLEANING FUNCTIONS
+# =====================================================
+
+def clean_amount(value):
+    """
+    Converts currency strings like:
+    ₹1,200 / Rs. 999 / 1,200.50 → float
+    """
+    if pd.isna(value):
+        return None
+
+    value = str(value)
+    value = re.sub(r"[^\d.]", "", value)  # remove currency symbols, commas
+    try:
+        return float(value)
+    except ValueError:
+        return None
+
+
+def clean_sale_date(value):
+    """
+    Parses mixed date formats safely
+    """
+    if pd.isna(value):
+        return None
+
+    value = str(value).strip()
+
+    try:
+        parsed = pd.to_datetime(value, errors="coerce", dayfirst=True)
+        if pd.isna(parsed):
+            return None
+        return parsed
+    except Exception:
+        return None
+
+
+def normalize_channel(value):
+    if pd.isna(value):
+        return "Unknown"
+
+    value = str(value).lower().strip()
+    return CHANNEL_MAPPING.get(value, "Unknown")
+
+# =====================================================
+# PHASE 2️⃣ – CLEAN CSV USING COLUMN MAPPING
+# =====================================================
+
+def clean_sales_csv(file_path, column_mapping):
+
+    df = pd.read_csv(file_path)
+    rows_before = len(df)
+
+    # ----------------------------------
+    # 1️⃣ Validate REQUIRED mappings
+    # ----------------------------------
+    missing_mappings = [
+        col for col in LOGICAL_REQUIRED_COLUMNS
+        if col not in column_mapping
+    ]
+
+    if missing_mappings:
+        raise ValueError(
+            f"Missing mapping for required fields: {missing_mappings}"
+        )
+
+    # ----------------------------------
+    # 2️⃣ Rename ACTUAL → LOGICAL columns
+    # ----------------------------------
+    rename_dict = {
+        actual: logical
+        for logical, actual in column_mapping.items()
+        if actual in df.columns
+    }
+
+    df = df.rename(columns=rename_dict)
+
+    # ----------------------------------
+    # 3️⃣ Validate mapped columns exist
+    # ----------------------------------
+    missing_columns = [
+        col for col in LOGICAL_REQUIRED_COLUMNS
+        if col not in df.columns
+    ]
+
+    if missing_columns:
+        raise ValueError(
+            f"Mapped columns missing in CSV: {missing_columns}"
+        )
+
+    # ----------------------------------
+    # 4️⃣ DROP rows without order_id
+    # ----------------------------------
+    df = df.dropna(subset=["order_id"])
+
+    # ----------------------------------
+    # 5️⃣ DEDUPLICATION (ONLY order_id)
+    # ----------------------------------
+    before_duplicates = len(df)
+    df = df.drop_duplicates(subset=["order_id"])
+    duplicates_removed = before_duplicates - len(df)
+
+    # ----------------------------------
+    # 6️⃣ CLEAN CORE FIELDS (RECOVERY FIRST)
+    # ----------------------------------
+    df["amount"] = df["amount"].apply(clean_amount)
+    df["sale_date"] = df["sale_date"].apply(clean_sale_date)
+
+    # ----------------------------------
+    # 7️⃣ OPTIONAL FIELD HANDLING
+    # ----------------------------------
+    if "city" in df.columns:
+        df["city"] = df["city"].fillna("Unknown")
+
+    if "channel" in df.columns:
+        df["channel"] = df["channel"].apply(normalize_channel)
+
+    # ----------------------------------
+    # 8️⃣ FINAL VALIDATION (DROP LAST)
+    # ----------------------------------
+    before_invalid = len(df)
+
+    df = df.dropna(subset=["product_name", "amount", "sale_date"])
+    df = df[df["amount"] > 0]
+    df = df[df["sale_date"] <= datetime.utcnow()]
+
+    invalid_rows_removed = before_invalid - len(df)
+
+    # ----------------------------------
+    # 9️⃣ CLEANING STATS
+    # ----------------------------------
+    stats = {
+        "rows_before": rows_before,
+        "rows_after": len(df),
+        "duplicates_removed": duplicates_removed,
+        "invalid_rows_removed": invalid_rows_removed
+    }
+
+    return df, stats
+
+# =====================================================
+# PHASE 3️⃣ – CLEAN + STORE INTO DATABASE
+# =====================================================
+
+def clean_and_store_sales_data(
+    file_path,
+    company_id,
+    uploaded_file_id,
+    column_mapping
+):
+    try:
+        cleaned_df, stats = clean_sales_csv(
+            file_path=file_path,
+            column_mapping=column_mapping
+        )
+
+        sales_objects = []
+
+        for _, row in cleaned_df.iterrows():
+            sales_objects.append(
+                SalesData(
+                    order_id=str(row["order_id"]),
+                    product_name=row["product_name"],
+                    amount=float(row["amount"]),
+                    sale_date=row["sale_date"],
+                    company_id=company_id,
+                    file_id=uploaded_file_id
+                )
+            )
+
+        db.session.bulk_save_objects(sales_objects)
+        db.session.commit()
+
+        return {
+            "message": "CSV cleaned & stored successfully",
+            "stats": stats
+        }, 201
+
+    except ValueError as ve:
+        return {"error": str(ve)}, 400
+
+    except Exception as e:
+        db.session.rollback()
+        return {"error": str(e)}, 500
+
+
+# End of File --------------------------
+
+# ------------------------------------
+# file_service.py
+# ------------------------------------
+
+import os
+import uuid
+from werkzeug.utils import secure_filename
+from flask import current_app
+from extensions import db
+from models import UploadedFile
+from services.sales_service import process_sales_file
+from utils.validators import allowed_file
+
+def save_and_process_file(file, user_id, company_id):
+    if not file or file.filename == '':
+        return {"error": "No file selected"}, 400
+
+    if not allowed_file(file.filename):
+        return {"error": "Invalid file type. Only CSV and Excel allowed"}, 400
+
+    filename = secure_filename(file.filename)
+    unique_filename = f"{uuid.uuid4().hex}_{filename}"
+    file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], unique_filename)
+
+    try:
+        # 1. Save Physical File
+        file.save(file_path)
+
+        # 2. Save Metadata to DB
+        new_file = UploadedFile(
+            filename=filename,
+            file_path=file_path,
+            uploaded_by=user_id,
+            company_id=company_id
+        )
+        db.session.add(new_file)
+        db.session.commit()
+
+        # 3. Process Data
+        success, message = process_sales_file(file_path, new_file.id, company_id)
+        
+        if not success:
+            os.remove(file_path)
+            return {"message": "File upload failed", "details": message}, 400
+
+        return {"message": "File uploaded and processed successfully"}, 201
+
+    except Exception as e:
+        return {"error": str(e)}, 500
+    
+
+# End of File --------------------------
+
+# ------------------------------------
+# sales_service.py
+# ------------------------------------
+
+import pandas as pd
+from models import SalesData
+from extensions import db
+
+def process_sales_file(file_path, file_id, company_id):
+    """
+    Parses CSV/Excel and populates sales_data table.
+    Assumes columns: Product, Amount, Date
+    """
+    try:
+        if file_path.endswith('.csv'):
+            df = pd.read_csv(file_path)
+        else:
+            df = pd.read_excel(file_path)
+
+        # Basic normalization
+        df.columns = [c.lower() for c in df.columns]
+        # Validation: Check if required columns exist
+        required_cols = {'product', 'amount'}
+        if not required_cols.issubset(df.columns):
+            return False, "Missing columns. Required: Product, Amount"
+
+        sale_date = row.get('date')
+        sales_entries = []
+        for _, row in df.iterrows():
+            sale = SalesData(
+                product_name=row.get('product', 'Unknown'),
+                amount=row.get('amount', 0.0),
+                sale_date=pd.to_datetime(sale_date, errors='coerce'),
+                file_id=file_id,
+                company_id=company_id
+                # Date handling can be added here
+            )
+            sales_entries.append(sale)
+
+        db.session.bulk_save_objects(sales_entries)
+        db.session.commit()
+        return True, "Data processed successfully"
+
+    except Exception as e:
+        return False, str(e)
+
+# End of File --------------------------
+
