@@ -12,7 +12,9 @@ import RoleProtectedRoute from "./RoleProtectedRoute";
 
 import CompaniesPage from "../pages/Dashboard/CompaniesPage";
 import AuditLogsPage from "../pages/Dashboard/AuditLogsPage";
-import UploadPage from "../pages/Dashboard/UploadPage";
+import EmployeeUpload from "../pages/Dashboard/EmployeeUpload";
+import ManagerEmployeesPage from "../pages/Dashboard/ManagerEmployeesPage";
+import ManagerDashboard from "../pages/Dashboard/ManagerDashboard";
 
 const AppRoutes = () => {
   return (
@@ -72,14 +74,32 @@ const AppRoutes = () => {
           path="/upload"
           element={
             <ProtectedRoute>
-              <UploadPage />
+              <EmployeeUpload />
             </ProtectedRoute>
           }
         />
 
         {/* TEST BACKEND */}
         <Route path="/test-backend" element={<TestConnection />} />
+      
 
+        <Route
+          path="/manager/employees"
+          element={
+            <ProtectedRoute>
+              <ManagerEmployeesPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/manager/dashboard"
+          element={
+            <ProtectedRoute>
+              <ManagerDashboard />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

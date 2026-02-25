@@ -18,46 +18,86 @@
   height: 100vh;
   background: #0f172a;
   color: white;
-  padding: 24px 18px;
+  padding: 24px 20px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;   /* keep menu at top */
+  justify-content: flex-start;
 }
 
 .sidebar-logo {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 600;
-  margin-bottom: 30px;
+  margin-bottom: 40px; /* 🔥 more spacing */
   color: #5eead4;
 }
 
+/* Menu Container */
 .sidebar-menu {
   list-style: none;
   padding: 0;
-  margin-top: 10px;
+  margin: 30px;
+}
+
+/* Each Item */
+.sidebar-menu li {
+  padding: 12px 14px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  position: relative; 
+}
+
+.sidebar-menu li::before {
+  content: "";
+  position: absolute;
+  left: -10px;
+  top: 50%;
+  transform: translateY(-50%) scaleY(0);
+  width: 4px;
+  height: 60%;
+  background: #14b8a6;
+  border-radius: 4px;
+  transition: transform 0.3s ease;
 }
 
 /* NavLink Style */
 .sidebar-link {
   display: block;
-  padding: 12px 14px;
-  border-radius: 8px;
+  padding: 12px 16px;
+  border-radius: 10px;
   text-decoration: none;
-  color: white;
+  color: #e2e8f0;
   font-size: 14px;
   transition: all 0.3s ease;
   position: relative;
 }
 
+/* Hover */
 .sidebar-link:hover {
-  background: #134e4a;
+  background: rgba(20, 184, 166, 0.15);
 }
 
-/* Active Link */
+/* Active Link (like image) */
 .sidebar-link.active {
   background: linear-gradient(90deg, #14b8a6, #0d9488);
+  color: white;
   transform: translateX(6px);
-  box-shadow: 0 6px 18px rgba(20, 184, 166, 0.3);
+  box-shadow: 0 6px 18px rgba(20, 184, 166, 0.35);
+}
+
+/* Active Left Indicator Bar */
+.sidebar-link.active::before {
+  content: "";
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 60%;
+  background: #14b8a6;
+  border-radius: 4px;
 }
 
 /* ============================= */
@@ -166,6 +206,53 @@
 .green { border-left: 6px solid #22c55e; }
 
 /* ============================= */
+/* ===== SECTION TITLE ===== */
+/* ============================= */
+
+.section-title {
+  font-size: 20px;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+/* ===== HEADER ===== */
+.page-header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.page-header h1 {
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.page-header p {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* ===== TOP ACTIONS ===== */
+.top-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  width: 250px;
+  outline: none;
+  transition: 0.2s;
+}
+
+.search-input:focus {
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+}
+
+/* ============================= */
 /* ===== TABLE CARD ===== */
 /* ============================= */
 
@@ -238,3 +325,33 @@
 .login_failed { background: #ef4444; }
 .recover { background: #3b82f6; }
 .suspend { background: #f97316; }
+
+/* ===== DRAG DROP ===== */
+
+.drop-zone {
+  border: 2px dashed #14b8a6;
+  padding: 40px;
+  text-align: center;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  background: #f9fafb;
+}
+
+.drop-zone:hover {
+  background: #ecfeff;
+}
+
+.drag-active {
+  background: #ccfbf1;
+  border-color: #0d9488;
+}
+
+.file-input {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
