@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { registerUser } from "../../services/authService";
+import { registerCompany } from "../../services/authService";
 
 const RegisterForm = () => {
   
@@ -23,7 +23,7 @@ const RegisterForm = () => {
     setLoading(true);
 
     try {
-      await registerUser({
+      const res = await registerCompany({
         company_name: companyName,
         industry,
         manager_name: managerName,
@@ -31,9 +31,15 @@ const RegisterForm = () => {
         password,
       });
 
+      localStorage.setItem("otp_email", email);
       navigate("/verify-otp");
+
     } catch (err) {
-      setError(err.message);
+      if (err.response?.data?.error) {
+        setError(err.response.data.error);
+      } else {
+        setError("Registration failed. Try again.");
+      }
     } finally {
       setLoading(false);
     }

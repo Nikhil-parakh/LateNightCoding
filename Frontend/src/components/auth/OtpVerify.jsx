@@ -1,22 +1,38 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { verifyCompanyOtp } from "../../services/authService";
 
 const OtpVerify = () => {
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleVerify = (e) => {
+  const handleVerify = async (e) => {
     e.preventDefault();
+    setError("");
 
-    // MOCK OTP CHECK
-    if (otp === "123456") {
-      localStorage.setItem("token", "mock-token");
-      localStorage.setItem("role", "manager");
-      navigate("/dashboard");
-    } else {
-      setError("Invalid OTP");
-    }
+    const email = localStorage.getItem("otp_email");
+
+    try {
+      const res = await verifyCompanyOtp({
+        email,
+        otp,
+      });
+
+      alert(res.message);
+
+      // OTP success → go to login
+      localStorage.removeItem("otp_email");
+
+      navigate("/login");
+
+    } catch (err) {
+        if (err.response?.data?.error) {
+          setError(err.response.data.error);
+        } else {
+          setError("OTP verification failed.");
+        }
+      }
   };
 
   return (

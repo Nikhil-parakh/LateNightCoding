@@ -79,7 +79,7 @@ def get_companies():
         # Pagination (Safe Defaults)
         # ----------------------------
         page = request.args.get('page', default=1, type=int)
-        limit = request.args.get('limit', default=2, type=int)
+        limit = request.args.get('limit', default=5, type=int)
 
         if page < 1:
             page = 1

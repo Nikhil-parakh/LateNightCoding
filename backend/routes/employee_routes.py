@@ -1,21 +1,32 @@
 from flask import Blueprint, request, jsonify, current_app
 from flask_jwt_extended import jwt_required, get_jwt
 from werkzeug.utils import secure_filename
+
 import os
 import uuid
 import pandas as pd
-
-from sqlalchemy import func
 from datetime import datetime
+from sqlalchemy import func
 
 from extensions import db
-from models import UploadedFile, ColumnMapping, Company   # ✅ Added Company
-from models import UploadedFile, ColumnMapping, Company, SalesData
+
+# Models
+from models import (
+    Company,
+    User,
+    Role,
+    UploadedFile,
+    ColumnMapping,
+    SalesData
+)
+
+# Utilities
 from utils.validators import allowed_file
 from utils.decorators import role_required
-
-from services.data_cleaning_service import clean_and_store_sales_data
 from utils.column_mapping import auto_map_optional_columns
+
+# Services
+from services.data_cleaning_service import clean_and_store_sales_data
 
 employee_bp = Blueprint("employee", __name__, url_prefix="/employee")
 
@@ -42,6 +53,103 @@ OPTIONAL_LOGICAL_COLUMNS = [
 ]
 
 
+# ==========================================================
+# 👤 EMPLOYEE DASHBOARD
+# ==========================================================
+@employee_bp.route("/dashboard", methods=["GET"])
+@jwt_required()
+@role_required(["Employee"])
+def employee_dashboard():
+
+    try:
+        claims = get_jwt()
+        employee_id = claims.get("user_id")
+        company_id = claims.get("company_id")
+
+        # --------------------------------------------------
+        # Company + Manager Details
+        # --------------------------------------------------
+
+        company = Company.query.get(company_id)
+        if not company:
+            return jsonify({"error": "Company not found"}), 404
+
+        manager_role = Role.query.filter_by(name="Company Manager").first()
+
+        manager = User.query.filter_by(
+            company_id=company_id,
+            role_id=manager_role.id
+        ).first()
+
+        # --------------------------------------------------
+        # Employee Files
+        # --------------------------------------------------
+
+        employee_files = UploadedFile.query.filter_by(
+            uploaded_by=employee_id
+        ).all()
+
+        file_ids = [f.id for f in employee_files]
+
+        total_uploads = len(employee_files)
+
+        total_cleaned_files = UploadedFile.query.filter(
+            UploadedFile.uploaded_by == employee_id,
+            UploadedFile.cleaned_file_path.isnot(None)
+        ).count()
+
+        # --------------------------------------------------
+        # Sales Data (Only Employee Files)
+        # --------------------------------------------------
+
+        total_rows_inserted = 0
+        total_revenue_generated = 0
+
+        if file_ids:
+            total_rows_inserted = SalesData.query.filter(
+                SalesData.file_id.in_(file_ids)
+            ).count()
+
+            total_revenue_generated = db.session.query(
+                db.func.coalesce(db.func.sum(SalesData.total_amount), 0)
+            ).filter(
+                SalesData.file_id.in_(file_ids)
+            ).scalar()
+
+        # --------------------------------------------------
+        # Last Upload Date
+        # --------------------------------------------------
+
+        last_upload = db.session.query(
+            db.func.max(UploadedFile.uploaded_at)
+        ).filter(
+            UploadedFile.uploaded_by == employee_id
+        ).scalar()
+
+        # --------------------------------------------------
+        # Final Response
+        # --------------------------------------------------
+
+        return jsonify({
+            "employee_overview": {
+                "company_name": company.name,
+                "manager_name": manager.username if manager else None,
+                "manager_email": manager.email if manager else None,
+
+                "total_uploads": total_uploads,
+                "total_cleaned_files": total_cleaned_files,
+                "total_rows_inserted": total_rows_inserted,
+                "total_revenue_generated": float(total_revenue_generated),
+                "last_upload_date": last_upload
+            }
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            "error": "Failed to load employee dashboard",
+            "details": str(e)
+        }), 500
+    
 # ==========================================================
 # PHASE 1️⃣ – UPLOAD & DETECT COLUMNS
 # ==========================================================

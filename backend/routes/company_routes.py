@@ -10,11 +10,42 @@ from utils.decorators import role_required
 
 company_bp = Blueprint('company', __name__, url_prefix='/company')
 
-# COMPANY DASHBOARD
+# # COMPANY DASHBOARD
+# @company_bp.route('/dashboard', methods=['GET'])
+# @jwt_required()
+# @role_required(['Company Manager', 'Employee'])
+# def dashboard():
+#     claims = get_jwt()
+#     company_id = claims.get('company_id')
+
+#     company = Company.query.get(company_id)
+#     if not company:
+#         return jsonify({"error": "Company not found"}), 404
+
+#     sales = SalesData.query.filter_by(company_id=company_id).all()
+#     total_revenue = sum(s.amount for s in sales)
+
+#     recent_files = (
+#         UploadedFile.query
+#         .filter_by(company_id=company_id)
+#         .order_by(UploadedFile.uploaded_at.desc())
+#         .limit(5)
+#         .all()
+#     )
+
+#     return jsonify({
+#         "company": company.name,
+#         "total_revenue": total_revenue,
+#         "sales_count": len(sales),
+#         "recent_uploads": [f.to_dict() for f in recent_files]
+#     }), 200
+
+# COMPANY DASHBOARD (MANAGER DASHBOARD)
 @company_bp.route('/dashboard', methods=['GET'])
 @jwt_required()
-@role_required(['Company Manager', 'Employee'])
+@role_required(['Company Manager'])
 def dashboard():
+
     claims = get_jwt()
     company_id = claims.get('company_id')
 
@@ -22,22 +53,90 @@ def dashboard():
     if not company:
         return jsonify({"error": "Company not found"}), 404
 
-    sales = SalesData.query.filter_by(company_id=company_id).all()
-    total_revenue = sum(s.amount for s in sales)
+    # -----------------------------
+    # SECTION 1 — Company Overview
+    # -----------------------------
 
-    recent_files = (
-        UploadedFile.query
-        .filter_by(company_id=company_id)
-        .order_by(UploadedFile.uploaded_at.desc())
-        .limit(5)
+    # Total Employees (exclude manager)
+    employee_role = Role.query.filter_by(name="Employee").first()
+
+    total_employees = User.query.filter_by(
+        company_id=company_id,
+        role_id=employee_role.id
+    ).count()
+
+    # Total Uploads
+    total_uploads = UploadedFile.query.filter_by(
+        company_id=company_id
+    ).count()
+
+    # Total Cleaned Files
+    total_cleaned_files = UploadedFile.query.filter(
+        UploadedFile.company_id == company_id,
+        UploadedFile.cleaned_file_path.isnot(None)
+    ).count()
+
+    # Total Rows Stored
+    total_rows_stored = SalesData.query.filter_by(
+        company_id=company_id
+    ).count()
+
+    # Total Revenue
+    total_revenue = db.session.query(
+        db.func.coalesce(db.func.sum(SalesData.total_amount), 0)
+    ).filter(
+        SalesData.company_id == company_id
+    ).scalar()
+
+    # Last Upload Date
+    last_upload = db.session.query(
+        db.func.max(UploadedFile.uploaded_at)
+    ).filter(
+        UploadedFile.company_id == company_id
+    ).scalar()
+
+    # -----------------------------
+    # SECTION 2 — Employee Activity
+    # -----------------------------
+
+    employee_activity = (
+        db.session.query(
+            User.id,
+            User.username,
+            db.func.count(UploadedFile.id).label("upload_count")
+        )
+        .join(UploadedFile, UploadedFile.uploaded_by == User.id, isouter=True)
+        .filter(User.company_id == company_id)
+        .filter(User.role_id == employee_role.id)
+        .group_by(User.id)
         .all()
     )
 
+    employee_activity_data = [
+        {
+            "employee_id": e.id,
+            "employee_name": e.username,
+            "upload_count": e.upload_count
+        }
+        for e in employee_activity
+    ]
+
+    # -----------------------------
+    # Final Response
+    # -----------------------------
+
     return jsonify({
-        "company": company.name,
-        "total_revenue": total_revenue,
-        "sales_count": len(sales),
-        "recent_uploads": [f.to_dict() for f in recent_files]
+        "company_overview": {
+            "company_name": company.name,
+            "industry": company.industry,
+            "total_employees": total_employees,
+            "total_uploads": total_uploads,
+            "total_cleaned_files": total_cleaned_files,
+            "total_rows_stored": total_rows_stored,
+            "total_revenue": float(total_revenue),
+            "last_upload_date": last_upload
+        },
+        "employee_activity": employee_activity_data
     }), 200
 
 
