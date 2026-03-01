@@ -1,0 +1,107 @@
+item_id,order_no,order_dt,item_name,item_type,units_sold,price_per_unit,bill_value,customer_city,customer_state,order_mode,customer_age,discount_pct,payment_type,return_flag,brand_name
+IT1000,5000,01-03-2025,Jeans,Western,4,2000,8000,Jodhpur,Rajasthan,Offline,39,20,UPI,Yes,SheStyle
+IT1001,5001,02-03-2025,Lehenga,Ethnic,,9500,,Vadodara,Gujarat,Online,37,20,Cash,No,SheStyle
+IT1002,5002,03-03-2025,Anarkali Suit,Ethnic,4,7000,28000,Jaipur,Rajasthan,Online,37,20,Card,Yes,SheStyle
+IT1003,5003,04-03-2025,Top,Western,1,1000,1000,Ajmer,Rajasthan,Online,34,10,Cash,Yes,SheStyle
+IT1004,5004,05-03-2025,Skirt,Western,2,1700,3400,Jaipur,Rajasthan,Offline,43,15,,No,SheStyle
+IT1005,5005,06-03-2025,Skirt,Western,4,1700,6800,Vadodara,Gujarat,Online,39,20,Cash,No,SheStyle
+IT1006,5006,07-03-2025,Top,Western,3,1000,3000,Udaipur,Rajasthan,Offline,26,10,Card,No,SheStyle
+IT1007,5007,08-03-2025,Top,Western,2,1000,2000,Bhavnagar,Gujarat,Offline,23,10,Card,No,SheStyle
+IT1008,5008,09-03-2025,Kurti,Casual,3,1400,4200,Kota,Rajasthan,Offline,20,10,UPI,No,SheStyle
+IT1009,5009,10-03-2025,Anarkali Suit,Ethnic,3,7000,21000,Ahmedabad,Gujarat,Online,37,5,UPI,Yes,SheStyle
+IT1010,5010,11-03-2025,Leggings,Casual,1,700,700,,Gujarat,Offline,42,0,Cash,No,SheStyle
+IT1011,5011,12-03-2025,Saree,Ethnic,2,5200,10400,Kota,Rajasthan,Online,35,20,Card,No,SheStyle
+IT1012,5012,13-03-2025,Leggings,,1,700,700,Rajkot,Gujarat,Online,20,5,UPI,Yes,SheStyle
+IT1013,5013,14-03-2025,Saree,Ethnic,1,5200,5200,Ahmedabad,Gujarat,Offline,29,10,Card,Yes,SheStyle
+IT1014,5014,15-03-2025,Kurti,Casual,3,1400,4200,Jaipur,Rajasthan,Online,24,20,UPI,No,SheStyle
+IT1015,5015,16-03-2025,Kurti,Casual,4,1400,5600,Vadodara,Gujarat,Online,34,5,Card,No,SheStyle
+IT1016,5016,17-03-2025,Jeans,Western,2,2000,4000,Vadodara,Gujarat,Offline,20,20,Cash,No,SheStyle
+IT1017,5017,18-03-2025,Anarkali Suit,Ethnic,3,7000,21000,Ahmedabad,Gujarat,,31,15,Card,Yes,SheStyle
+IT1018,5018,19-03-2025,Skirt,Western,3,1700,5100,Ajmer,Rajasthan,Offline,42,15,Card,Yes,SheStyle
+IT1019,5019,20-03-2025,Skirt,Western,2,1700,3400,Rajkot,Gujarat,Online,31,15,Cash,No,SheStyle
+IT1020,5020,21-03-2025,Kurti,Casual,3,1400,4200,Ajmer,Rajasthan,Offline,39,5,Cash,No,SheStyle
+IT1021,5021,22-03-2025,Jeans,Western,1,2000,2000,Jaipur,Rajasthan,Offline,20,20,Card,No,SheStyle
+IT1022,5022,23-03-2025,Skirt,Western,4,1700,6800,Ahmedabad,Gujarat,Offline,42,15,Card,No,SheStyle
+IT1023,5023,24-03-2025,Saree,Ethnic,1,5200,5200,Rajkot,Gujarat,Online,43,15,UPI,Yes,SheStyle
+IT1024,5024,25-03-2025,Skirt,Western,4,1700,6800,Rajkot,Gujarat,Offline,31,15,Cash,No,SheStyle
+IT1025,5025,26-03-2025,Saree,Ethnic,2,5200,10400,Udaipur,Rajasthan,Offline,26,15,Cash,No,SheStyle
+IT1026,5026,27-03-2025,Skirt,Western,1,1700,1700,Jodhpur,Rajasthan,Offline,31,20,Card,No,SheStyle
+IT1027,5027,28-03-2025,Top,Western,1,1000,1000,Ahmedabad,Gujarat,Offline,29,20,Cash,Yes,SheStyle
+IT1028,5028,29-03-2025,Top,Western,3,1000,3000,Kota,Rajasthan,Online,27,20,UPI,No,SheStyle
+IT1029,5029,30-03-2025,Saree,Ethnic,4,5200,20800,Rajkot,Gujarat,Online,31,5,UPI,Yes,SheStyle
+IT1030,5030,01-03-2025,Top,Western,3,1000,3000,Jodhpur,Rajasthan,Offline,38,15,Card,No,SheStyle
+IT1031,5031,02-03-2025,Lehenga,Ethnic,2,9500,19000,Rajkot,Gujarat,Online,28,10,UPI,No,SheStyle
+IT1032,5032,03-03-2025,Top,Western,2,1000,2000,Ahmedabad,Gujarat,Offline,38,20,UPI,No,SheStyle
+IT1033,5033,04-03-2025,Saree,Ethnic,1,5200,5200,Surat,Gujarat,Offline,42,20,Card,No,SheStyle
+IT1034,5034,05-03-2025,Saree,Ethnic,4,5200,20800,Rajkot,Gujarat,,28,15,UPI,No,SheStyle
+IT1035,5035,06-03-2025,Skirt,Western,4,1700,6800,Rajkot,Gujarat,,38,10,UPI,No,SheStyle
+IT1036,5036,07-03-2025,Anarkali Suit,Ethnic,4,7000,28000,Ajmer,Rajasthan,Offline,44,15,Card,Yes,SheStyle
+IT1037,5037,08-03-2025,Kurti,Casual,1,1400,1400,Ahmedabad,Gujarat,Offline,34,20,UPI,Yes,SheStyle
+IT1038,5038,09-03-2025,Jeans,Western,1,2000,2000,Jodhpur,Rajasthan,Offline,23,15,Card,Yes,SheStyle
+IT1039,5039,10-03-2025,Lehenga,Ethnic,1,9500,9500,Jodhpur,Rajasthan,Offline,44,15,UPI,Yes,SheStyle
+IT1040,5040,11-03-2025,Saree,Ethnic,3,5200,15600,Bhavnagar,Gujarat,Online,24,20,Cash,No,SheStyle
+IT1041,5041,12-03-2025,Skirt,Western,3,1700,5100,Udaipur,Rajasthan,Offline,34,20,Card,No,SheStyle
+IT1042,5042,13-03-2025,Kurti,Casual,2,1400,2800,Rajkot,Gujarat,Online,22,10,UPI,No,SheStyle
+IT1043,5043,14-03-2025,Skirt,Western,2,1700,3400,Ahmedabad,Gujarat,Offline,37,5,Card,No,SheStyle
+IT1044,5044,15-03-2025,Skirt,Western,3,1700,5100,Kota,Rajasthan,Offline,37,10,UPI,No,SheStyle
+IT1045,5045,16-03-2025,Saree,Ethnic,3,5200,15600,Vadodara,Gujarat,Online,30,0,UPI,No,SheStyle
+IT1046,5046,17-03-2025,Lehenga,Ethnic,3,9500,28500,Vadodara,Gujarat,Offline,38,15,Card,No,SheStyle
+IT1047,5047,18-03-2025,Kurti,Casual,1,1400,1400,Ajmer,Rajasthan,Offline,44,15,Card,Yes,SheStyle
+IT1048,5048,19-03-2025,Top,Western,4,1000,4000,Kota,Rajasthan,Offline,37,20,Cash,Yes,SheStyle
+IT1049,5049,20-03-2025,Anarkali Suit,Ethnic,3,7000,21000,Ajmer,Rajasthan,Offline,45,0,Cash,Yes,SheStyle
+IT1050,5050,21-03-2025,Lehenga,Ethnic,2,9500,19000,Bhavnagar,Gujarat,Online,26,15,Card,No,SheStyle
+IT1051,5051,22-03-2025,Kurti,Casual,4,1400,5600,Jaipur,Rajasthan,Offline,33,0,Card,Yes,SheStyle
+IT1052,5052,23-03-2025,Kurti,Casual,2,1400,2800,Ajmer,Rajasthan,Offline,29,20,Cash,Yes,SheStyle
+IT1053,5053,24-03-2025,Skirt,Western,4,1700,6800,Jodhpur,Rajasthan,Offline,20,15,Cash,Yes,SheStyle
+IT1054,5054,25-03-2025,Skirt,Western,3,1700,5100,Surat,Gujarat,Offline,29,5,Card,Yes,SheStyle
+IT1055,5055,26-03-2025,Anarkali Suit,Ethnic,1,7000,7000,Ahmedabad,Gujarat,Online,28,5,Card,Yes,SheStyle
+IT1056,5056,27-03-2025,Top,Western,4,1000,4000,Vadodara,Gujarat,Online,29,10,Card,Yes,SheStyle
+IT1057,5057,28-03-2025,Jeans,Western,3,2000,6000,Jodhpur,Rajasthan,Online,38,15,Card,Yes,SheStyle
+IT1058,5058,29-03-2025,Skirt,Western,1,1700,1700,Bhavnagar,Gujarat,Online,23,5,UPI,No,SheStyle
+IT1059,5059,30-03-2025,Jeans,Western,2,2000,4000,Bhavnagar,Gujarat,Offline,42,20,UPI,No,SheStyle
+IT1060,5060,01-03-2025,Anarkali Suit,Ethnic,2,7000,,Ahmedabad,Gujarat,Online,31,0,Card,Yes,SheStyle
+IT1061,5061,02-03-2025,Kurti,Casual,4,1400,5600,Jaipur,Rajasthan,Online,28,15,Cash,Yes,SheStyle
+IT1062,5062,03-03-2025,Lehenga,Ethnic,,9500,9500,Vadodara,Gujarat,Offline,34,0,Cash,Yes,SheStyle
+IT1063,5063,04-03-2025,Saree,Ethnic,1,5200,,Ahmedabad,Gujarat,Online,26,10,UPI,No,SheStyle
+IT1064,5064,05-03-2025,Lehenga,Ethnic,4,9500,38000,Jaipur,Rajasthan,Online,38,15,UPI,No,SheStyle
+IT1065,5065,06-03-2025,Kurti,Casual,1,1400,1400,Ahmedabad,Gujarat,Online,44,5,Cash,No,SheStyle
+IT1066,5066,07-03-2025,Leggings,Casual,2,700,1400,Udaipur,Rajasthan,Offline,39,5,Cash,No,SheStyle
+IT1067,5067,08-03-2025,Kurti,Casual,3,1400,4200,Bhavnagar,Gujarat,Offline,32,20,UPI,Yes,SheStyle
+IT1068,5068,09-03-2025,Kurti,Casual,2,1400,2800,Jaipur,Rajasthan,Offline,37,5,Card,Yes,SheStyle
+IT1069,5069,10-03-2025,Skirt,Western,3,1700,5100,Udaipur,Rajasthan,Online,44,10,Card,Yes,SheStyle
+IT1070,5070,11-03-2025,Anarkali Suit,Ethnic,3,7000,21000,Surat,Gujarat,Offline,30,10,Card,No,SheStyle
+IT1071,5071,12-03-2025,Jeans,Western,1,2000,2000,Ajmer,Rajasthan,Online,35,0,Cash,Yes,SheStyle
+IT1072,5072,13-03-2025,Saree,Ethnic,1,5200,5200,Surat,Gujarat,Offline,41,20,Card,Yes,SheStyle
+IT1073,5073,14-03-2025,Saree,Ethnic,2,5200,10400,Vadodara,Gujarat,Online,44,10,UPI,No,SheStyle
+IT1074,5074,15-03-2025,Skirt,Western,1,1700,1700,Vadodara,Gujarat,Offline,31,0,Card,No,SheStyle
+IT1075,5075,16-03-2025,Lehenga,Ethnic,4,9500,38000,Vadodara,Gujarat,Online,44,15,UPI,No,SheStyle
+IT1076,5076,17-03-2025,Top,Western,2,1000,2000,Surat,Gujarat,Offline,23,0,Cash,No,SheStyle
+IT1077,5077,18-03-2025,Anarkali Suit,Ethnic,,7000,,Surat,Gujarat,Offline,31,5,Card,Yes,SheStyle
+IT1078,5078,19-03-2025,Leggings,Casual,3,700,2100,Surat,Gujarat,Online,39,10,UPI,Yes,SheStyle
+IT1079,5079,20-03-2025,Saree,Ethnic,1,5200,5200,Jodhpur,Rajasthan,Offline,29,0,Cash,Yes,SheStyle
+IT1080,5080,21-03-2025,Leggings,Casual,1,700,700,Jaipur,Rajasthan,Offline,34,15,Cash,Yes,SheStyle
+IT1081,5081,22-03-2025,Saree,Ethnic,,5200,,Jaipur,Rajasthan,Offline,31,5,UPI,No,SheStyle
+IT1082,5082,23-03-2025,Top,Western,4,1000,4000,Ajmer,Rajasthan,Online,33,15,Cash,Yes,SheStyle
+IT1083,5083,24-03-2025,Skirt,Western,1,1700,1700,Ajmer,Rajasthan,Online,28,20,Cash,No,SheStyle
+IT1084,5084,25-03-2025,Lehenga,Ethnic,2,9500,19000,Rajkot,Gujarat,Offline,35,5,Cash,No,SheStyle
+IT1085,5085,26-03-2025,Jeans,Western,1,2000,2000,Kota,Rajasthan,Offline,36,0,Cash,No,SheStyle
+IT1086,5086,27-03-2025,Lehenga,Ethnic,4,9500,38000,Ahmedabad,Gujarat,Online,26,15,Card,No,SheStyle
+IT1087,5087,28-03-2025,Saree,Ethnic,2,5200,10400,Jaipur,Rajasthan,Offline,29,15,Cash,Yes,SheStyle
+IT1088,5088,29-03-2025,Skirt,Western,2,1700,3400,Kota,Rajasthan,Online,26,20,Cash,No,SheStyle
+IT1089,5089,30-03-2025,Leggings,Casual,1,700,700,Surat,Gujarat,Online,45,0,Cash,Yes,SheStyle
+IT1090,5090,01-03-2025,Lehenga,Ethnic,1,9500,,Ajmer,Rajasthan,Offline,37,0,Card,No,SheStyle
+IT1091,5091,02-03-2025,Skirt,Western,4,,2000,Jodhpur,Rajasthan,Online,32,5,Cash,Yes,SheStyle
+IT1092,5092,03-03-2025,Leggings,Casual,2,700,1400,Ajmer,Rajasthan,Offline,22,5,Cash,Yes,SheStyle
+IT1093,5093,04-03-2025,Leggings,Casual,3,700,2100,Jodhpur,Rajasthan,Online,20,10,Cash,No,SheStyle
+IT1094,5094,05-03-2025,Anarkali Suit,Ethnic,3,7000,21000,Rajkot,Gujarat,Online,45,10,Card,No,SheStyle
+IT1095,5095,06-03-2025,Leggings,Casual,2,700,1400,Jodhpur,Rajasthan,Offline,27,15,Card,Yes,SheStyle
+IT1096,5096,07-03-2025,Skirt,Western,1,1700,1700,Surat,Gujarat,Online,41,20,Card,No,SheStyle
+IT1097,5097,08-03-2025,Saree,Ethnic,2,5200,10400,Surat,Gujarat,Online,40,15,UPI,No,SheStyle
+IT1098,5098,09-03-2025,Skirt,Western,1,1700,1700,Udaipur,Rajasthan,Online,20,5,UPI,Yes,SheStyle
+IT1099,5099,10-03-2025,Lehenga,Ethnic,3,9500,28500,Kota,Rajasthan,Offline,29,10,Card,No,SheStyle
+IT1099,5099,10-03-2025,Lehenga,Ethnic,3,9500,28500,Kota,Rajasthan,Offline,29,10,Card,No,SheStyle
+IT1096,5100,07-03-2025,Skirt,Western,1,1700,1700,Surat,Gujarat,Online,41,20,Card,No,SheStyle
+IT1097,5101,08-03-2025,Saree,Ethnic,2,5200,10400,Surat,Gujarat,Online,40,15,UPI,No,SheStyle
+IT1098,5102,09-03-2025,Skirt,Western,1,1700,1700,Udaipur,Rajasthan,Online,20,5,UPI,Yes,SheStyle
+IT1099,5103,10-03-2025,Lehenga,Ethnic,3,9500,28500,Kota,Rajasthan,Offline,29,10,Card,No,SheStyle
+IT1099,5104,10-03-2025,Lehenga,Ethnic,3,9500,28500,Kota,Rajasthan,Offline,29,10,Card,No,SheStyle
