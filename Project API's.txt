@@ -82,7 +82,7 @@ Response:
 
 (Suspend particular company)
 
-4. PATCH - http://127.0.0.1:5000/admin/company/<EmployeeID>/suspend
+4. PATCH - http://127.0.0.1:5000/admin/company/<id>/suspend       #(id = company_id)
 
 Authorization: Bearer Token
 
@@ -95,7 +95,7 @@ Response:
 
 (Recover particular company)
 
-5. PATCH - http://127.0.0.1:5000/admin/company/<EmployeeID>/recover
+5. PATCH - http://127.0.0.1:5000/admin/company/<id>/recover       #(id = company_id)
 
 Authorization: Bearer Token
 

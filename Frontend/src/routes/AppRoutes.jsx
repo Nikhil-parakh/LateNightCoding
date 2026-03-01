@@ -30,7 +30,7 @@ const AppRoutes = () => {
         <Route
           path="/register"
           element={
-            <RoleProtectedRoute allowedRoles={["manager"]}>
+            <RoleProtectedRoute allowedRoles={["manager", "user", "admin"]}>
               <RegisterPage />
             </RoleProtectedRoute>
           }

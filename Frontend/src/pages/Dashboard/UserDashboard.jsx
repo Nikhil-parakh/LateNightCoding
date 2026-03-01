@@ -1,6 +1,6 @@
 import { useState } from "react";
 import UserSidebar from "../../components/dashboard/UserSidebar";
-import AdminTopbar from "../../components/admin/AdminTopbar";
+import AdminTopbar from "../../components/dashboard/UserTopbar";
 import EmployeeUpload from "./EmployeeUpload";
 import "../../styles/dashboard.css";
 

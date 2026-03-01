@@ -19,14 +19,11 @@ const CompaniesPage = () => {
     try {
       setLoading(true);
 
-      const res = await apiClient.get(
-        `/admin/companies?page=${page}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const res = await apiClient.get(`/admin/companies?page=${page}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
 
       setCompanies(res.data.companies);
       setPagination(res.data.pagination);
@@ -38,8 +35,48 @@ const CompaniesPage = () => {
   };
 
   const filteredCompanies = companies.filter((c) =>
-    c.company_name.toLowerCase().includes(search.toLowerCase())
+    c.company_name.toLowerCase().includes(search.toLowerCase()),
   );
+
+  const handleSuspend = async (id) => {
+    try {
+      await apiClient.patch(
+        `/admin/company/${id}/suspend`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        },
+      );
+
+      alert("Company suspended successfully");
+      fetchCompanies(currentPage); // refresh list
+    } catch (error) {
+      console.error(error);
+      alert("Failed to suspend company");
+    }
+  };
+
+  const handleRecover = async (id) => {
+    try {
+      await apiClient.patch(
+        `/admin/company/${id}/recover`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        },
+      );
+
+      alert("Company recovered successfully");
+      fetchCompanies(currentPage); // refresh list
+    } catch (error) {
+      console.error(error);
+      alert("Failed to recover company");
+    }
+  };
 
   return (
     <div className="dashboard-layout">
@@ -77,6 +114,7 @@ const CompaniesPage = () => {
                       <th>Industry</th>
                       <th>Uploads</th>
                       <th>Status</th>
+                      <th>Action</th>
                     </tr>
                   </thead>
 
@@ -98,17 +136,32 @@ const CompaniesPage = () => {
                             {c.status}
                           </span>
                         </td>
+
+                        <td>
+                          {c.status === "Active" ? (
+                            <button
+                              className="action-btn delete-btn"
+                              onClick={() => handleSuspend(c.company_id)}
+                            >
+                              Suspend
+                            </button>
+                          ) : (
+                            <button
+                              className="action-btn edit-btn"
+                              onClick={() => handleRecover(c.company_id)}
+                            >
+                              Recover
+                            </button>
+                          )}
+                        </td>
                       </tr>
                     ))}
 
                     {filteredCompanies.length === 0 && (
                       <tr>
                         <td
-                          colSpan="5"
-                          style={{
-                            textAlign: "center",
-                            padding: "20px",
-                          }}
+                          colSpan="6"
+                          style={{ textAlign: "center", padding: "20px" }}
                         >
                           No companies found
                         </td>
@@ -129,24 +182,19 @@ const CompaniesPage = () => {
                     <button
                       className="action-btn edit-btn"
                       disabled={!pagination.has_prev}
-                      onClick={() =>
-                        setCurrentPage((prev) => prev - 1)
-                      }
+                      onClick={() => setCurrentPage((prev) => prev - 1)}
                     >
                       Previous
                     </button>
 
                     <span>
-                      Page {pagination.current_page} of{" "}
-                      {pagination.total_pages}
+                      Page {pagination.current_page} of {pagination.total_pages}
                     </span>
 
                     <button
                       className="action-btn edit-btn"
                       disabled={!pagination.has_next}
-                      onClick={() =>
-                        setCurrentPage((prev) => prev + 1)
-                      }
+                      onClick={() => setCurrentPage((prev) => prev + 1)}
                     >
                       Next
                     </button>
