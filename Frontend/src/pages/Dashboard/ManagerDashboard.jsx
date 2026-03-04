@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import apiClient from "../../services/apiClient";
-import ManagerSidebar from "../../components/dashboard/ManagerSidebar";
-import ManagerTopbar from "../../components/dashboard/ManagerTopbar";
 import AdminStatCard from "../../components/admin/AdminStatCard";
+import ManagerLayout from "../../layouts/ManagerLayout";
 import "../../styles/dashboard.css";
 
-const ManagerDashboard = () => {
+const ManagerDashboard = ({ darkMode, toggleDarkMode }) => {
   const [overview, setOverview] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -21,7 +20,6 @@ const ManagerDashboard = () => {
         });
 
         setOverview(response.data.company_overview);
-
       } catch (error) {
         console.error("Error fetching manager dashboard:", error);
       } finally {
@@ -33,74 +31,65 @@ const ManagerDashboard = () => {
   }, []);
 
   return (
-    <div className="dashboard-layout">
-      <ManagerSidebar />
+    <ManagerLayout darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
+      {/* ===== Dashboard Content Only ===== */}
 
-      <div className="dashboard-main">
-        <ManagerTopbar title="Manager Dashboard 📊" />
+      <h1 className="dashboard-title">
+        {overview?.company_name
+          ? `${overview.company_name} Dashboard`
+          : "Company Dashboard"}
+      </h1>
 
-        <div className="dashboard-content">
-          <h1 className="dashboard-title">
-            {overview?.company_name
-              ? `${overview.company_name} Dashboard`
-              : "Company Dashboard"}
-          </h1>
+      <p className="dashboard-subtitle">
+        {overview?.industry
+          ? `${overview.industry} Industry • Real-time company statistics`
+          : "Real-time company statistics"}
+      </p>
 
-          <p className="dashboard-subtitle">
-            {overview?.industry
-              ? `${overview.industry} Industry • Real-time company statistics`
-              : "Real-time company statistics"}
-          </p>
+      {loading ? (
+        <p>Loading dashboard data...</p>
+      ) : overview ? (
+        <div className="stats-row">
+          <AdminStatCard
+            title="Total Employees"
+            value={overview.total_employees}
+            color="teal"
+          />
 
-          {loading ? (
-            <p>Loading dashboard data...</p>
-          ) : overview ? (
-            <div className="stats-row">
+          <AdminStatCard
+            title="Total Uploads"
+            value={overview.total_uploads}
+            color="yellow"
+          />
 
-              <AdminStatCard
-                title="Total Employees"
-                value={overview.total_employees}
-                color="teal"
-              />
+          <AdminStatCard
+            title="Cleaned Files"
+            value={overview.total_cleaned_files}
+            color="green"
+          />
 
-              <AdminStatCard
-                title="Total Uploads"
-                value={overview.total_uploads}
-                color="yellow"
-              />
+          <AdminStatCard
+            title="Total Revenue"
+            value={`₹ ${overview.total_revenue}`}
+            color="teal"
+          />
 
-              <AdminStatCard
-                title="Cleaned Files"
-                value={overview.total_cleaned_files}
-                color="green"
-              />
+          <AdminStatCard
+            title="Total Rows Stored"
+            value={overview.total_rows_stored}
+            color="yellow"
+          />
 
-              <AdminStatCard
-                title="Total Revenue"
-                value={`₹ ${overview.total_revenue}`}
-                color="teal"
-              />
-
-              <AdminStatCard
-                title="Total Rows Stored"
-                value={overview.total_rows_stored}
-                color="yellow"
-              />
-
-              <AdminStatCard
-                title="Last Upload Date"
-                value={overview.last_upload_date || "No uploads yet"}
-                color="red"
-              />
-
-            </div>
-          ) : (
-            <p>No data available</p>
-          )}
-
+          <AdminStatCard
+            title="Last Upload Date"
+            value={overview.last_upload_date || "No uploads yet"}
+            color="red"
+          />
         </div>
-      </div>
-    </div>
+      ) : (
+        <p>No data available</p>
+      )}
+    </ManagerLayout>
   );
 };
 

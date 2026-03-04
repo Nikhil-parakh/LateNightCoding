@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import ColumnMapping from "./ColumnMapping";
+import uploadCloud from "../../assets/icons/upload.png";
 
 const EmployeeUpload = ({ onUploadSuccess }) => {
   const [file, setFile] = useState(null);
@@ -29,7 +30,7 @@ const EmployeeUpload = ({ onUploadSuccess }) => {
             "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-        }
+        },
       );
 
       setResponseData(res.data);
@@ -38,7 +39,6 @@ const EmployeeUpload = ({ onUploadSuccess }) => {
         setCleaningReport(res.data.cleaning_report);
         onUploadSuccess();
       }
-
     } catch (error) {
       console.error(error);
       alert("Upload failed");
@@ -76,7 +76,6 @@ const EmployeeUpload = ({ onUploadSuccess }) => {
 
   return (
     <div className="content-box">
-
       {/* DRAG & DROP AREA */}
       <div
         className={`drop-zone ${dragActive ? "drag-active" : ""}`}
@@ -91,6 +90,8 @@ const EmployeeUpload = ({ onUploadSuccess }) => {
           onChange={(e) => setFile(e.target.files[0])}
           className="file-input"
         />
+
+        <img src={uploadCloud} className="upload-icon" />
 
         <p>
           {file

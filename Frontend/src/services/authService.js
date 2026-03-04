@@ -8,18 +8,12 @@ export const loginUser = async (data) => {
 
 // COMPANY REGISTER (Manager Registration)
 export const registerCompany = async (data) => {
-  const response = await apiClient.post(
-    "/company/register-company",
-    data
-  );
+  const response = await apiClient.post("/company/register-company", data);
   return response.data;
 };
 
 // VERIFY OTP
 export const verifyCompanyOtp = async (data) => {
-  const response = await apiClient.post(
-    "/company/verify-otp",
-    data
-  );
+  const response = await apiClient.post("/company/verify-otp", data);
   return response.data;
 };
