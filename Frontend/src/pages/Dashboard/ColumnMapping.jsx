@@ -22,11 +22,10 @@ const ColumnMapping = ({ data, onSuccess }) => {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-        }
+        },
       );
 
       onSuccess(response.data.cleaning_report);
-
     } catch (error) {
       console.error(error);
       alert("Mapping failed");
@@ -36,87 +35,93 @@ const ColumnMapping = ({ data, onSuccess }) => {
   };
 
   return (
-    <div className="table-card" style={{ marginTop: "20px" }}>
-      <h2>Column Mapping</h2>
+    <div className="mapping-container">
+      <h2 className="mapping-title">Column Mapping</h2>
+      <p className="mapping-desc">Match your CSV columns with system fields</p>
 
-      {/* ================= REQUIRED ================= */}
-      <h3 style={{ marginTop: "20px", color: "#ef4444" }}>
-        Required Columns
-      </h3>
+      {/* REQUIRED */}
+      <div className="mapping-section required">
+        <h3>Required Columns</h3>
 
-      {data.required_columns.map((col) => (
-        <div key={col} style={{ marginBottom: "10px" }}>
-          <label>{col}</label>
-          <select
-            className="search-input"
-            onChange={(e) =>
-              setRequiredMapping({
-                ...requiredMapping,
-                [col]: e.target.value,
-              })
-            }
-          >
-            <option value="">Select Column</option>
-            {data.detected_columns.map((dc) => (
-              <option key={dc} value={dc}>
-                {dc}
-              </option>
-            ))}
-          </select>
+        <div className="mapping-grid">
+          {data.required_columns.map((col) => (
+            <div key={col} className="mapping-item">
+              <label>{col}</label>
+
+              <select
+                className="mapping-select"
+                onChange={(e) =>
+                  setRequiredMapping({
+                    ...requiredMapping,
+                    [col]: e.target.value,
+                  })
+                }
+              >
+                <option value="">Select Column</option>
+
+                {data.detected_columns.map((dc) => (
+                  <option key={dc} value={dc}>
+                    {dc}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ))}
         </div>
-      ))}
+      </div>
 
-      {/* ================= OPTIONAL ================= */}
-      <h3 style={{ marginTop: "30px", color: "#f59e0b" }}>
-        Optional Columns
-      </h3>
+      {/* OPTIONAL */}
+      <div className="mapping-section optional">
+        <h3>Optional Columns</h3>
 
-      {data.optional_columns.map((col) => (
-        <div key={col} style={{ marginBottom: "10px" }}>
-          <label>{col}</label>
-          <select
-            className="search-input"
-            onChange={(e) =>
-              setOptionalMapping({
-                ...optionalMapping,
-                [col]: e.target.value,
-              })
-            }
-          >
-            <option value="">Skip (Optional)</option>
-            {data.detected_columns.map((dc) => (
-              <option key={dc} value={dc}>
-                {dc}
-              </option>
-            ))}
-          </select>
+        <div className="mapping-grid">
+          {data.optional_columns.map((col) => (
+            <div key={col} className="mapping-item">
+              <label>{col}</label>
+
+              <select
+                className="mapping-select"
+                onChange={(e) =>
+                  setOptionalMapping({
+                    ...optionalMapping,
+                    [col]: e.target.value,
+                  })
+                }
+              >
+                <option value="">Skip (Optional)</option>
+
+                {data.detected_columns.map((dc) => (
+                  <option key={dc} value={dc}>
+                    {dc}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ))}
         </div>
-      ))}
+      </div>
 
-      {/* ================= SYSTEM OPTIONAL ================= */}
-      <h3 style={{ marginTop: "30px", color: "#3b82f6" }}>
-        System Mapped Columns
-      </h3>
+      {/* SYSTEM */}
+      <div className="mapping-section system">
+        <h3>System Mapped Columns</h3>
 
-      {Object.entries(data.system_optional_mapping).map(
-        ([systemCol, detectedCol]) => (
-          <div key={systemCol} style={{ marginBottom: "10px" }}>
-            <label>{systemCol}</label>
-            <input
-              className="search-input"
-              value={detectedCol}
-              disabled
-            />
-          </div>
-        )
-      )}
+        <div className="mapping-grid">
+          {Object.entries(data.system_optional_mapping).map(
+            ([systemCol, detectedCol]) => (
+              <div key={systemCol} className="mapping-item">
+                <label>{systemCol}</label>
 
-      {/* ================= SUBMIT ================= */}
+                <input className="mapping-input" value={detectedCol} disabled />
+              </div>
+            ),
+          )}
+        </div>
+      </div>
+
       <button
-        className="action-btn edit-btn"
+        className="mapping-submit"
         onClick={handleSubmit}
         disabled={loading}
-        style={{ marginTop: "20px" }}
       >
         {loading ? "Processing..." : "Submit Mapping"}
       </button>

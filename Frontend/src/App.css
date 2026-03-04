@@ -15,35 +15,258 @@ body,
   background: #f5f7f9;
 }
 
+/* ================= OR DIVIDER ================= */
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 30px 0;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #e2e8f0;
+}
+
 /* ================= AUTH LAYOUT ================= */
 
-.auth-options {
+.google-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: white;
   display: flex;
-  justify-content: space-between; /* pushes them apart */
   align-items: center;
-  margin-bottom: 22px;
-  font-size: 13px;
-}
-
-.forgot-text {
-  color: #147d6f;
+  justify-content: center;
+  gap: 10px;
+  font-weight: 500;
   cursor: pointer;
+  transition: 0.3s;
 }
 
-.auth-page-wrapper {
+.google-btn:hover {
+  background: #f3f4f6;
+}
+
+.auth-container {
+  display: flex;
   height: 100vh;
   width: 100%;
-  display: flex;
-  justify-content: center; /* horizontal center */
-  align-items: center; /* vertical center */
-  background: linear-gradient(135deg, #0f766e, #14b8a6);
 }
 
-/* Hide old split layout sections */
-.auth-page-left,
-.auth-page-right,
+/* LEFT SIDE */
+.auth-left {
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f8fafc;
+}
+
+.auth-left-inner {
+  width: 420px;
+}
+
+.auth-left-inner form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px; /* main vertical spacing */
+}
+
+.auth-heading {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.auth-desc {
+  color: #64748b;
+  margin-bottom: 30px;
+}
+
+.theme-toggle {
+  position: absolute;
+  bottom: 30px;
+  right: 30px;
+
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+
+  cursor: pointer;
+  font-size: 20px;
+  transition: 0.3s ease;
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* DARK MODE */
+body.dark .theme-toggle {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+body.dark .auth-left {
+  background: #0f172a;
+  color: white;
+}
+
+body.dark .auth-input {
+  background: #1e293b;
+  color: white;
+  border: 1px solid #334155;
+}
+
+body.dark .input-label {
+  color: #e2e8f0; /* soft white */
+}
+
+body.dark .fullscreen-loader {
+  background: #020617;
+}
+
+.auth-left-inner {
+  width: 420px;
+  animation: fadeSlide 0.8s ease forwards;
+  opacity: 0;
+}
+
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================= AUTH RIGHT SIDE ================= */
 .auth-right {
-  display: none;
+  width: 50%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  color: white;
+  background: #1e2058;
+}
+
+.grid-bg {
+  position: absolute;
+  inset: 0;
+
+  background-image:
+    linear-gradient(rgba(99, 102, 241, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.08) 1px, transparent 1px);
+
+  background-size: 70px 70px;
+}
+
+.grid-fade {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at center,
+    rgba(30, 27, 75, 0) 40%,
+    rgba(30, 27, 75, 0.7) 75%,
+    rgba(30, 27, 75, 1) 100%
+  );
+}
+
+.highlight-square {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.square1 {
+  top: 30%;
+  left: 35%;
+}
+
+.square2 {
+  bottom: 25%;
+  right: 30%;
+}
+
+.branding-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+.branding-content h1 {
+  font-size: 42px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.branding-content p {
+  font-size: 16px;
+  opacity: 0.8;
+}
+
+/* GRID */
+.auth-right::before {
+  content: "";
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+  background-size: 40px 40px;
+  animation: moveGrid 20s linear infinite;
+}
+
+@keyframes moveGrid {
+  from {
+    transform: translate(0, 0);
+  }
+  to {
+    transform: translate(-40px, -40px);
+  }
+}
+
+.auth-right::after {
+  content: "";
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.15), transparent);
+  border-radius: 50%;
+  top: 10%;
+  left: 20%;
+  animation: floatShape 6s ease-in-out infinite alternate;
+}
+
+@keyframes floatShape {
+  from {
+    transform: translateY(0px);
+  }
+  to {
+    transform: translateY(30px);
+  }
 }
 
 /* ================= AUTH CARD ================= */
@@ -76,7 +299,7 @@ body,
   font-size: 13px;
   font-weight: 500;
   color: #374151;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   display: block;
 }
 
@@ -121,7 +344,6 @@ body,
   border: 1px solid #d1d5db;
   background: #f3f4f6;
   font-size: 14px;
-  margin-bottom: 22px; /* slightly more gap */
 }
 
 .auth-input:focus {
@@ -132,11 +354,38 @@ body,
 
 /* ================= BUTTON ================= */
 
+.auth-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* vertical alignment fix */
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+.auth-options label {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* checkbox aur text ke beech spacing */
+  cursor: pointer;
+}
+
+.auth-options input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #160e6e; /* optional theme color */
+}
+
+.forgot-text {
+  font-size: 14px;
+  color: #0f766e;
+  cursor: pointer;
+}
+
 .auth-btn {
   width: 100%;
   padding: 14px;
 
-  background: #0f766e;
+  background: #160e6e;
   color: white;
   border: none;
 
@@ -145,6 +394,8 @@ body,
   font-size: 15px;
 
   transition: 0.25s ease;
+  margin-top: 10px;
+  padding: 16px;
 }
 
 .auth-btn:hover {
@@ -267,5 +518,48 @@ body,
   .otp-card {
     width: 90%;
     padding: 30px 20px;
+  }
+}
+
+/* ================= FULL SCREEN LOADER ================= */
+
+/* ================= BLUR LOADER ================= */
+
+.blur-loader-overlay {
+  position: fixed;
+  inset: 0;
+  backdrop-filter: blur(8px);
+  background: rgba(15, 23, 42, 0.35);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.blur-loader-card {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 40px 60px;
+  border-radius: 20px;
+  backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  color: white;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.loader-spinner {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  border-top: 4px solid #6366f1;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
