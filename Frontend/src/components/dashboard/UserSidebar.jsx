@@ -1,35 +1,49 @@
-import { useNavigate, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+
+import dashboardIcon from "../../assets/icons/dashboard.png";
+import uploadIcon from "../../assets/icons/upload.png";
+import chartIcon from "../../assets/icons/chart.png";
 
 const UserSidebar = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const isActive = (path) => location.pathname === path;
-
   return (
     <div className="sidebar">
       <h2 className="sidebar-logo">Salesify</h2>
 
       <ul className="sidebar-menu">
-        <li
-          className={isActive("/user/dashboard") ? "active" : ""}
-          onClick={() => navigate("/user/dashboard")}
-        >
-          Dashboard
+        <li>
+          <NavLink
+            to="/user/dashboard"
+            className={({ isActive }) =>
+              isActive ? "sidebar-link active" : "sidebar-link"
+            }
+          >
+            <img src={dashboardIcon} className="sidebar-icon" />
+            Dashboard
+          </NavLink>
         </li>
 
-        <li
-          className={isActive("/user/upload") ? "active" : ""}
-          onClick={() => navigate("/user/upload")}
-        >
-          Upload File
+        <li>
+          <NavLink
+            to="/user/upload"
+            className={({ isActive }) =>
+              isActive ? "sidebar-link active" : "sidebar-link"
+            }
+          >
+            <img src={uploadIcon} className="sidebar-icon" />
+            Upload File
+          </NavLink>
         </li>
 
-        <li
-          className={isActive("/user/charts") ? "active" : ""}
-          onClick={() => navigate("/user/charts")}
-        >
-          Charts
+        <li>
+          <NavLink
+            to="/user/charts"
+            className={({ isActive }) =>
+              isActive ? "sidebar-link active" : "sidebar-link"
+            }
+          >
+            <img src={chartIcon} className="sidebar-icon" />
+            Charts
+          </NavLink>
         </li>
       </ul>
     </div>
