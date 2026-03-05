@@ -14,6 +14,14 @@ const ManagerTopbar = ({ toggleSidebar, darkMode, toggleDarkMode }) => {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    localStorage.removeItem("manager_name");
+    localStorage.removeItem("manager_email");
+
+    navigate("/login");
+  };
 
   const managerName = localStorage.getItem("manager_name") || "Manager";
   const managerEmail =
@@ -90,7 +98,7 @@ const ManagerTopbar = ({ toggleSidebar, darkMode, toggleDarkMode }) => {
               Account Settings
             </div>
 
-            <div className="dropdown-item logout">
+            <div className="dropdown-item logout" onClick={handleLogout}>
               <img src={logoutIcon} alt="" />
               Sign Out
             </div>

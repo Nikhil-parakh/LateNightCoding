@@ -1,0 +1,51 @@
+﻿order_id,order_date,product_name,category,quantity,unit_price,total_amount,city,state,sales_channel
+2001,05-01-2025,Kurti,Casual Wear,2,1200,2400,Ahmedabad,Gujarat,Online
+2002,06-01-2025,Saree,Ethnic Wear,1,4500,4500,Surat,Gujarat,Offline
+2003,06-01-2025,Lehenga,Ethnic Wear,1,8500,8500,Jaipur,Rajasthan,Online
+2004,07-01-2025,Top,Western Wear,3,900,2700,Udaipur,Rajasthan,Offline
+2005,07-01-2025,Jeans,Western Wear,2,1800,3600,Rajkot,Gujarat,Online
+2006,08-01-2025,Leggings,Casual Wear,4,600,2400,Vadodara,Gujarat,Offline
+2007,08-01-2025,Anarkali Suit,Ethnic Wear,1,6200,6200,Jaipur,Rajasthan,Offline
+2008,09-01-2025,Skirt,Western Wear,2,1500,3000,Ajmer,Rajasthan,Online
+2009,09-01-2025,Kurti,Casual Wear,1,1200,1200,Surat,Gujarat,Online
+2010,10-01-2025,Saree,Ethnic Wear,1,4500,4500,Ahmedabad,Gujarat,Offline
+2011,10-01-2025,Top,Western Wear,2,900,1800,Kota,Rajasthan,Online
+2012,11-01-2025,Jeans,Western Wear,1,1800,1800,Vadodara,Gujarat,Offline
+2013,11-01-2025,Lehenga,Ethnic Wear,1,8500,8500,Udaipur,Rajasthan,Offline
+2014,12-01-2025,Leggings,Casual Wear,,600,,Ahmedabad,Gujarat,Online
+2015,12-01-2025,Anarkali Suit,Ethnic Wear,1,6200,6200,Surat,Gujarat,Offline
+2016,13-01-2025,Skirt,Western Wear,2,1500,3000,Jaipur,Rajasthan,Online
+2017,13-01-2025,Kurti,Casual Wear,3,1200,3600,Jodhpur,Rajasthan,Offline
+2018,14-01-2025,Saree,Ethnic Wear,1,4500,4500,Ajmer,Rajasthan,Online
+2019,14-01-2025,Top,Western Wear,2,900,1800,Rajkot,Gujarat,Online
+2020,15-01-2025,Jeans,Western Wear,1,1800,1800,Ahmedabad,Gujarat,Offline
+2021,15-01-2025,Lehenga,Ethnic Wear,1,8500,8500,Jaipur,Rajasthan,Offline
+2022,16-01-2025,Leggings,Casual Wear,4,600,2400,Surat,Gujarat,Online
+2023,16-01-2025,Anarkali Suit,Ethnic Wear,1,6200,6200,Udaipur,Rajasthan,Offline
+2024,17-01-2025,Skirt,Western Wear,2,1500,3000,Kota,Rajasthan,Online
+2025,17-01-2025,Kurti,Casual Wear,1,1200,1200,Vadodara,Gujarat,Online
+2026,18-01-2025,Saree,Ethnic Wear,,4500,,Jaipur,Rajasthan,Offline
+2027,18-01-2025,Top,Western Wear,3,900,2700,Surat,Gujarat,Online
+2028,19-01-2025,Jeans,Western Wear,2,1800,3600,Ajmer,Rajasthan,Offline
+2029,19-01-2025,Lehenga,Ethnic Wear,1,8500,8500,Bhavnagar,Gujarat,Online
+2030,20-01-2025,Leggings,Casual Wear,5,600,3000,Jodhpur,Rajasthan,Offline
+2031,20-01-2025,Anarkali Suit,Ethnic Wear,1,6200,6200,Ahmedabad,Gujarat,Online
+2032,21-01-2025,Skirt,Western Wear,2,1500,3000,Surat,Gujarat,Offline
+2033,21-01-2025,Kurti,Casual Wear,2,1200,2400,Jaipur,Rajasthan,Online
+2034,22-01-2025,Saree,Ethnic Wear,1,4500,4500,Udaipur,Rajasthan,Offline
+2035,22-01-2025,Top,Western Wear,3,900,2700,Vadodara,Gujarat,Online
+2036,23-01-2025,Jeans,Western Wear,1,1800,1800,Rajkot,Gujarat,Offline
+2037,23-01-2025,Lehenga,Ethnic Wear,1,8500,8500,Kota,Rajasthan,Online
+2038,24-01-2025,Leggings,Casual Wear,4,600,2400,Ahmedabad,Gujarat,Online
+2039,24-01-2025,Anarkali Suit,Ethnic Wear,1,6200,6200,Surat,Gujarat,Offline
+2040,25-01-2025,Skirt,Western Wear,2,1500,3000,Ajmer,Rajasthan,Online
+2041,25-01-2025,Kurti,Casual Wear,3,1200,3600,Udaipur,Rajasthan,Offline
+2042,26-01-2025,Saree,Ethnic Wear,1,4500,4500,Vadodara,Gujarat,Online
+2043,26-01-2025,Top,Western Wear,2,900,1800,Jaipur,Rajasthan,Offline
+2044,27-01-2025,Jeans,Western Wear,2,1800,3600,Surat,Gujarat,Online
+2045,27-01-2025,Lehenga,Ethnic Wear,1,8500,8500,Rajkot,Gujarat,Offline
+2046,28-01-2025,Leggings,Casual Wear,5,600,3000,Kota,Rajasthan,Online
+2047,28-01-2025,Anarkali Suit,Ethnic Wear,1,6200,6200,Ahmedabad,Gujarat,Offline
+2048,29-01-2025,Skirt,Western Wear,2,1500,3000,Jodhpur,Rajasthan,Online
+2049,29-01-2025,Kurti,Casual Wear,1,1200,1200,Surat,Gujarat,Online
+2050,30-01-2025,Saree,Ethnic Wear,1,4500,4500,Jaipur,Rajasthan,Offline
