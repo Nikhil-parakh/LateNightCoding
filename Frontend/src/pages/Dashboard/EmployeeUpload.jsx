@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import ColumnMapping from "./ColumnMapping";
 import uploadCloud from "../../assets/icons/upload.png";
@@ -12,6 +12,13 @@ const EmployeeUpload = ({ onUploadSuccess = () => {} }) => {
   const [loading, setLoading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [availableCharts, setAvailableCharts] = useState([]);
+  const [selectedCharts, setSelectedCharts] = useState([]);
+
+  useEffect(() => {
+    if (cleaningReport) {
+      fetchAvailableCharts();
+    }
+  }, [cleaningReport]);
 
   const handleUpload = async () => {
     if (!file) {
@@ -44,14 +51,19 @@ const EmployeeUpload = ({ onUploadSuccess = () => {} }) => {
         if (onUploadSuccess) {
           onUploadSuccess();
         }
-
-        fetchAvailableCharts(); // ⭐ fetch charts list
       }
     } catch (error) {
       console.error(error);
       alert("Upload failed");
     } finally {
       setLoading(false);
+    }
+  };
+  const toggleChart = (chartName) => {
+    if (selectedCharts.includes(chartName)) {
+      setSelectedCharts(selectedCharts.filter((c) => c !== chartName));
+    } else {
+      setSelectedCharts([...selectedCharts, chartName]);
     }
   };
 
@@ -99,11 +111,15 @@ const EmployeeUpload = ({ onUploadSuccess = () => {} }) => {
     }
   };
 
-  const handleChartClick = (chartName) => {
-    navigate("/user/charts", {
-      state: { charts: [chartName] },
-    });
-  };
+  // const handleChartClick = (chartName) => {
+  //   const charts = [chartName];
+
+  //   localStorage.setItem("selectedCharts", JSON.stringify(charts));
+
+  //   navigate("/user/charts", {
+  //     state: { charts },
+  //   });
+  // };
 
   return (
     <div className="content-box">
@@ -148,6 +164,7 @@ const EmployeeUpload = ({ onUploadSuccess = () => {} }) => {
             setCleaningReport(report);
             setResponseData(null);
             onUploadSuccess();
+            fetchAvailableCharts(); // ⭐ ADD THIS
           }}
         />
       )}
@@ -160,19 +177,54 @@ const EmployeeUpload = ({ onUploadSuccess = () => {} }) => {
         </div>
       )}
 
+      {/* Loading Charts */}
+      {availableCharts.length === 0 && cleaningReport && (
+        <p style={{ marginTop: "15px" }}>Loading available charts...</p>
+      )}
+
       {/* Available Charts */}
       {availableCharts.length > 0 && (
         <div className="table-card" style={{ marginBottom: "30px" }}>
           <h3>Select Charts</h3>
 
-          <div className="charts-selector">
+          <div className="charts-grid">
             {availableCharts.map((chart) => (
-              <button key={chart} onClick={() => handleChartClick(chart)}>
-                {chart.replaceAll("_", " ")}
-              </button>
+              <div
+                key={chart}
+                className={`chart-card ${
+                  selectedCharts.includes(chart) ? "selected" : ""
+                }`}
+                onClick={() => toggleChart(chart)}
+              >
+                <div className="chart-icon">
+                  {chart === "revenue_over_time" && "📈"}
+                  {chart === "sales_volume_over_time" && "📊"}
+                  {chart === "sales_by_state" && "🌍"}
+                  {chart === "top_10_products" && "🏆"}
+                  {chart === "category_performance" && "🛍️"}
+                  {chart === "online_vs_offline" && "💻"}
+                  {chart === "payment_mode_distribution" && "💳"}
+                </div>
+
+                <div className="chart-title">{chart.replaceAll("_", " ")}</div>
+              </div>
             ))}
           </div>
         </div>
+      )}
+
+      {selectedCharts.length > 0 && (
+        <button
+          className="action-btn edit-btn"
+          style={{ marginTop: "20px" }}
+          onClick={() =>
+            navigate("/user/charts", {
+              state: { charts: selectedCharts },
+            })
+          }
+        >
+          Generate Charts
+        </button>
       )}
     </div>
   );

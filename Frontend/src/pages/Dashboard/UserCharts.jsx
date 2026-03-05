@@ -5,6 +5,9 @@ import {
   Line,
   BarChart,
   Bar,
+  PieChart,
+  Pie,
+  Cell,
   XAxis,
   YAxis,
   Tooltip,
@@ -14,14 +17,62 @@ import {
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+const COLORS = ["#2563eb", "#14b8a6", "#f59e0b", "#ef4444", "#8b5cf6"];
+
+const chartConfig = {
+  revenue_over_time: {
+    type: "line",
+    title: "Revenue Over Time",
+    color: "#2563eb",
+  },
+  sales_volume_over_time: {
+    type: "line",
+    title: "Sales Volume Over Time",
+    color: "#10b981",
+  },
+  sales_by_state: {
+    type: "bar",
+    title: "Sales by State",
+    color: "#14b8a6",
+  },
+  top_10_products: {
+    type: "bar",
+    title: "Top 10 Products",
+    color: "#f59e0b",
+  },
+  category_performance: {
+    type: "bar",
+    title: "Category Performance",
+    color: "#6366f1",
+  },
+  online_vs_offline: {
+    type: "pie",
+    title: "Online vs Offline Sales",
+  },
+  payment_mode_distribution: {
+    type: "pie",
+    title: "Payment Mode Distribution",
+  },
+};
+
 const UserCharts = () => {
   const location = useLocation();
+
   const [chartsData, setChartsData] = useState({});
   const [loading, setLoading] = useState(false);
+
+  // safer parsing
   const selectedCharts = location.state?.charts || [];
 
   const fetchCharts = async (charts) => {
-    if (charts.length === 0) return;
+    if (!charts || charts.length === 0) return;
+
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      console.error("No token found. Please login again.");
+      return;
+    }
 
     setLoading(true);
 
@@ -29,20 +80,17 @@ const UserCharts = () => {
       const res = await axios.post(
         "http://localhost:5000/employee/generate-charts",
         {
-          charts: charts,
-          filter: {
-            type: "year",
-            year: 2025,
-          },
+          charts,
+          filter: { type: "year", year: 2025 },
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
         },
       );
 
-      setChartsData(res.data.charts);
+      setChartsData(res.data.charts || {});
     } catch (error) {
       console.error("Chart fetch error:", error);
     } finally {
@@ -51,83 +99,105 @@ const UserCharts = () => {
   };
 
   useEffect(() => {
-    if (selectedCharts.length > 0) {
+    if (selectedCharts && selectedCharts.length > 0) {
       fetchCharts(selectedCharts);
     }
-  }, [selectedCharts]);
+  }, []);
 
   const formatChartData = (chart) => {
-    if (!chart) return [];
+    if (!chart || !chart.labels) return [];
 
-    return chart.labels.map((label, index) => ({
-      label,
-      value: chart.data[index],
-    }));
+    // case 1 dataset format
+    if (chart.datasets) {
+      return chart.labels.map((label, index) => ({
+        label,
+        value: chart.datasets?.[0]?.data?.[index] ?? 0,
+      }));
+    }
+
+    // case 2 simple data format
+    if (chart.data) {
+      return chart.labels.map((label, index) => ({
+        label,
+        value: chart.data?.[index] ?? 0,
+      }));
+    }
+
+    return [];
+  };
+
+  const renderChart = (chartKey) => {
+    const config = chartConfig[chartKey];
+    const chart = chartsData[chartKey];
+
+    if (!config || !chart) return null;
+
+    const data = formatChartData(chart);
+
+    return (
+      <div key={chartKey} className="table-card chart-item">
+        <h3>{config.title}</h3>
+
+        <ResponsiveContainer width="100%" height={300}>
+          {config.type === "line" && (
+            <LineChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="label" />
+              <YAxis />
+              <Tooltip />
+              <Line
+                type="monotone"
+                dataKey="value"
+                stroke={config.color}
+                strokeWidth={3}
+              />
+            </LineChart>
+          )}
+
+          {config.type === "bar" && (
+            <BarChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="label" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="value" fill={config.color} />
+            </BarChart>
+          )}
+
+          {config.type === "pie" && (
+            <PieChart>
+              <Pie
+                data={data}
+                dataKey="value"
+                nameKey="label"
+                outerRadius={100}
+                label
+              >
+                {data.map((entry, index) => (
+                  <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          )}
+        </ResponsiveContainer>
+      </div>
+    );
   };
 
   return (
     <UserLayout>
       {loading && <p>Loading charts...</p>}
+
       <h1 className="dashboard-title">Sales Analytics</h1>
       <p className="dashboard-subtitle">
         Visual insights from uploaded sales data
       </p>
 
-      {chartsData.revenue_over_time && (
-        <div className="table-card" style={{ marginBottom: "30px" }}>
-          <h3>Revenue Over Time</h3>
-
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={formatChartData(chartsData.revenue_over_time)}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="label" />
-              <YAxis />
-              <Tooltip />
-
-              <Line
-                type="monotone"
-                dataKey="value"
-                stroke="#2563eb"
-                strokeWidth={3}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      )}
-
-      {chartsData.sales_by_state && (
-        <div className="table-card" style={{ marginBottom: "30px" }}>
-          <h3>Sales by State</h3>
-
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={formatChartData(chartsData.sales_by_state)}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="label" />
-              <YAxis />
-              <Tooltip />
-
-              <Bar dataKey="value" fill="#14b8a6" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      )}
-
-      {chartsData.top_10_products && (
-        <div className="table-card">
-          <h3>Top 10 Products</h3>
-
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={formatChartData(chartsData.top_10_products)}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="label" />
-              <YAxis />
-              <Tooltip />
-
-              <Bar dataKey="value" fill="#f59e0b" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      )}
+      {/* CHART GRID */}
+      <div className="chart-grid">
+        {Object.keys(chartsData).map((chartKey) => renderChart(chartKey))}
+      </div>
     </UserLayout>
   );
 };
