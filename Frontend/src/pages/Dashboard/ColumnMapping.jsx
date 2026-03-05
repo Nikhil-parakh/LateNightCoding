@@ -27,8 +27,14 @@ const ColumnMapping = ({ data, onSuccess }) => {
 
       onSuccess(response.data.cleaning_report);
     } catch (error) {
-      console.error(error);
-      alert("Mapping failed");
+      console.error("Mapping Error:", error);
+
+      if (error.response) {
+        console.error("Backend Error:", error.response.data);
+        alert(error.response.data.message || "Mapping failed");
+      } else {
+        alert("Mapping failed");
+      }
     } finally {
       setLoading(false);
     }
