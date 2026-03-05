@@ -523,3 +523,101 @@ Response:
         "payment_mode_distribution"
     ]
 }
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Generate charts...
+
+17. GET - http://localhost:5000/employee/generate-charts
+
+Authorization: bearer token
+
+Body:
+{
+  "charts": [
+    "revenue_over_time",
+    "sales_by_state",
+    "top_10_products"
+  ],
+  "filter": {
+    "type": "year",
+    "year": 2025
+  }     
+}
+
+
+Response:
+{
+    "charts": {
+        "revenue_over_time": {
+            "data": [
+                784700.0
+            ],
+            "labels": [
+                "2025-03"
+            ]
+        },
+        "sales_by_state": {
+            "data": [
+                315800.0,
+                468900.0
+            ],
+            "labels": [
+                "Rajasthan",
+                "Gujarat"
+            ]
+        },
+        "top_10_products": {
+            "data": [
+                247000.0,
+                182000.0,
+                156000.0,
+                83300.0,
+                46200.0,
+                30000.0,
+                29000.0,
+                11200.0
+            ],
+            "labels": [
+                "Lehenga",
+                "Anarkali Suit",
+                "Saree",
+                "Skirt",
+                "Kurti",
+                "Jeans",
+                "Top",
+                "Leggings"
+            ]
+        }
+    }
+}
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+NLP Chatbot...
+
+18. POST - http://localhost:5000/employee/nlp-query
+
+Authorization: bearer token
+
+Body:
+{
+  "query": "who is the prime minister"
+}
+
+Body:
+{
+  "query": "total revenue in 2025"
+}
+
+Response: (if questions are not related to data)
+{
+    "query": "who is the prime minister",
+    "response": "I can only answer questions related to your sales data."
+}
+
+Response: (if questions is related to data)
+{
+    "query": "total revenue in 2025",
+    "response": "Total revenue in 2025 is 855500."
+}
