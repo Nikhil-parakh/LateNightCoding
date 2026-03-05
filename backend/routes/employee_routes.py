@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, current_app
 from flask_jwt_extended import jwt_required, get_jwt
 from werkzeug.utils import secure_filename
+from services.nlp_services import process_nlp_query
 
 import os
 import uuid
@@ -714,5 +715,48 @@ def generate_charts():
     except Exception as e:
         return jsonify({
             "error": "Chart generation failed",
+            "details": str(e)
+        }), 500
+    
+# ==========================================================
+# 🤖 NLP QUERY (EMPLOYEE SALES DATA QUESTIONS)
+# ==========================================================
+@employee_bp.route("/nlp-query", methods=["POST"])
+@jwt_required()
+@role_required(["Employee"])
+def nlp_query():
+    try:
+        data = request.get_json()
+
+        if not data or "query" not in data:
+            return jsonify({
+                "error": "Query is required"
+            }), 400
+
+        user_query = data.get("query").strip()
+
+        if not user_query:
+            return jsonify({
+                "error": "Query cannot be empty"
+            }), 400
+
+        # Get employee details from JWT
+        claims = get_jwt()
+        employee_id = claims.get("user_id")
+
+        # Call NLP service
+        result = process_nlp_query(
+            query=user_query,
+            employee_id=employee_id
+        )
+
+        return jsonify({
+            "query": user_query,
+            "response": result
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            "error": "Failed to process NLP query",
             "details": str(e)
         }), 500
