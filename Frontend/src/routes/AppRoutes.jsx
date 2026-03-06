@@ -28,14 +28,7 @@ const AppRoutes = ({ darkMode, toggleDarkMode }) => {
         {/* AUTH ROUTES */}
         <Route path="/login" element={<LoginPage />} />
 
-        <Route
-          path="/register"
-          element={
-            <RoleProtectedRoute allowedRoles={["manager", "user", "admin"]}>
-              <RegisterPage />
-            </RoleProtectedRoute>
-          }
-        />
+        <Route path="/register" element={<RegisterPage />} />
 
         <Route path="/verify-otp" element={<OtpVerify />} />
         <Route path="/unauthorized" element={<Unauthorized />} />

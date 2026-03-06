@@ -18,20 +18,23 @@ apiClient.interceptors.request.use(
 
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 // 🔥 Auto logout if token expired (401)
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
+    const isLoginRequest = error.config?.url === "/login";
+
+    // Only auto logout if it's NOT login request
+    if (!isLoginRequest && error.response && error.response.status === 401) {
       localStorage.removeItem("token");
       localStorage.removeItem("role");
       window.location.href = "/login";
     }
-    return Promise.reject(error);
-  }
-);
 
+    return Promise.reject(error);
+  },
+);
 export default apiClient;
