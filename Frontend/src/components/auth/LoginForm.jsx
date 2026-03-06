@@ -22,6 +22,11 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
+    if (!email || !password) {
+      setError("Email and password are required");
+      return;
+    }
     setLoading(true);
 
     try {
