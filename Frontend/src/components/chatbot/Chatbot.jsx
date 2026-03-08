@@ -1,8 +1,10 @@
 import { useState } from "react";
+import apiClient from "../../services/apiClient"; // use your axios instance
 import "./Chatbot.css";
 
 const Chatbot = () => {
   const [open, setOpen] = useState(false);
+
   const [messages, setMessages] = useState([
     {
       sender: "bot",
@@ -11,43 +13,59 @@ const Chatbot = () => {
   ]);
 
   const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (!input.trim()) return;
 
-    const newMessage = {
+    const userMessage = {
       sender: "user",
       text: input,
     };
 
-    setMessages([...messages, newMessage]);
+    setMessages((prev) => [...prev, userMessage]);
+
+    const queryText = input;
     setInput("");
 
-    // fake bot reply (later connect AI API)
-    setTimeout(() => {
+    try {
+      setLoading(true);
+
+      const response = await apiClient.post("/employee/nlp-query", {
+        query: queryText,
+      });
+
+      const botMessage = {
+        sender: "bot",
+        text: response.data.response,
+      };
+
+      setMessages((prev) => [...prev, botMessage]);
+    } catch (error) {
+      console.error(error);
+
       setMessages((prev) => [
         ...prev,
         {
           sender: "bot",
-          text: "I received your message: " + input,
+          text: "⚠️ Unauthorized or server error. Please login again.",
         },
       ]);
-    }, 700);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <>
       {/* FLOAT BUTTON */}
-      {!open && (
-        <button className="chatbot-button" onClick={() => setOpen(true)}>
-          💬
-        </button>
-      )}
+      <button className="chatbot-button" onClick={() => setOpen(!open)}>
+        💬
+      </button>
 
       {/* CHAT WINDOW */}
       {open && (
         <div className="chatbot-container">
-          {/* HEADER */}
           <div className="chatbot-header">
             <span>AI Assistant</span>
 
@@ -72,7 +90,6 @@ const Chatbot = () => {
             </div>
           </div>
 
-          {/* MESSAGES */}
           <div className="chatbot-messages">
             {messages.map((msg, i) => (
               <div
@@ -84,15 +101,21 @@ const Chatbot = () => {
                 {msg.text}
               </div>
             ))}
+
+            {loading && (
+              <div className="message bot-message">AI is thinking...</div>
+            )}
           </div>
 
-          {/* INPUT */}
           <div className="chatbot-input">
             <input
               type="text"
               placeholder="Enter a message..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") sendMessage();
+              }}
             />
 
             <button onClick={sendMessage}>➤</button>

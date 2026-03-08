@@ -1,6 +1,7 @@
 import { useState } from "react";
 import UserSidebar from "../components/dashboard/UserSidebar";
 import UserTopbar from "../components/dashboard/UserTopbar";
+import Chatbot from "../components/chatbot/Chatbot";
 
 const UserLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -14,6 +15,9 @@ const UserLayout = ({ children }) => {
 
         <div className="dashboard-content">{children}</div>
       </div>
+
+      {/* CHATBOT FLOATING BUTTON */}
+      <Chatbot />
     </div>
   );
 };

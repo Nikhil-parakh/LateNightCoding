@@ -1,4 +1,29 @@
 /* ============================= */
+/* ===== GLOBAL FIXES ===== */
+/* ============================= */
+
+/* Prevent horizontal scroll issues */
+body {
+  overflow-x: hidden;
+}
+
+/* Make sure layout never exceeds screen */
+.dashboard-layout {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* Main content should not overflow */
+.dashboard-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  position: relative;
+  width: 100%;
+}
+
+/* ============================= */
 /* ===== DASHBOARD LAYOUT ===== */
 /* ============================= */
 
@@ -293,8 +318,11 @@ body,
 
 .dashboard-content {
   padding: 35px 40px;
+  padding-bottom: 120px; /* space for chatbot button */
+
   position: relative;
   z-index: 1;
+  box-sizing: border-box;
 }
 
 .dashboard-title {
@@ -521,8 +549,11 @@ body,
   transition: all 0.3s ease;
   position: relative;
   background: #f9fafb;
-}
 
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
 .drop-zone:hover {
   background: #ecfeff;
 }
@@ -647,19 +678,27 @@ body,
   background: #1d4ed8;
 }
 
-/* Chart cards grid */
+/* ============================= */
+/* ===== GENERATED CHART GRID ===== */
+/* ============================= */
+
 .chart-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 25px;
   margin-top: 25px;
+  width: 100%;
 }
+/* ============================= */
+/* ===== CHART SELECTION GRID ===== */
+/* ============================= */
 
 .charts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 20px;
   margin-top: 20px;
+  width: 100%;
 }
 
 .chart-item {
@@ -676,6 +715,7 @@ body,
   transition: all 0.25s ease;
   border: 2px solid transparent;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  width: 100%;
 }
 
 .chart-card:hover {
