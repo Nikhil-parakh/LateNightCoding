@@ -2,6 +2,7 @@
   position: fixed;
   bottom: 25px;
   right: 25px;
+  z-index: 999;
   background: #2563eb;
   border: none;
   color: white;
@@ -15,15 +16,17 @@
 
 .chatbot-container {
   position: fixed;
-  bottom: 25px;
-  right: 25px;
-  width: 350px;
+  bottom: 90px;
+  right: 20px;
+  width: 360px;
+  max-width: 90vw;
   height: 500px;
   background: white;
   border-radius: 15px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
+  z-index: 9999;
 }
 
 .chatbot-header {

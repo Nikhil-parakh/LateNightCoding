@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
+import HomePage from "../pages/Home/HomePage";
 import LoginPage from "../pages/Login/LoginPage";
 import RegisterPage from "../pages/Register/RegisterPage";
 import DashboardPage from "../pages/Dashboard/DashboardPage";
@@ -23,9 +24,10 @@ const AppRoutes = ({ darkMode, toggleDarkMode }) => {
     <BrowserRouter>
       <Routes>
         {/* ROOT REDIRECT */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/" element={<HomePage />} />
 
         {/* AUTH ROUTES */}
+
         <Route path="/login" element={<LoginPage />} />
 
         <Route path="/register" element={<RegisterPage />} />
