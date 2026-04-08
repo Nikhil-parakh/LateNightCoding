@@ -16,6 +16,9 @@ from utils.nlp_utils import (
 
 def process_nlp_query(query: str, employee_id: int):
 
+    # ----------------------------------------
+    # PREPROCESS + NLP
+    # ----------------------------------------
     query = preprocess_query(query)
 
     intent = detect_intent(query)
@@ -24,6 +27,11 @@ def process_nlp_query(query: str, employee_id: int):
         return "I can only answer questions related to your sales data."
 
     entities = extract_entities(query)
+
+    # DEBUG (optional but useful)
+    print("Query:", query)
+    print("Intent:", intent)
+    print("Entities:", entities)
 
     # ----------------------------------------
     # Get employee files
@@ -43,7 +51,7 @@ def process_nlp_query(query: str, employee_id: int):
     )
 
     # ----------------------------------------
-    # Apply year filter
+    # APPLY FILTERS (YEAR / MONTH)
     # ----------------------------------------
 
     if "year" in entities:
@@ -51,16 +59,20 @@ def process_nlp_query(query: str, employee_id: int):
             extract("year", SalesData.order_date) == entities["year"]
         )
 
+    if "month" in entities:
+        base_query = base_query.filter(
+            extract("month", SalesData.order_date) == entities["month"]
+        )
+
     # ----------------------------------------
     # INTENT HANDLERS
     # ----------------------------------------
 
+    # ✅ 1. REVENUE (FIXED)
     if intent == "revenue":
 
-        total_revenue = db.session.query(
+        total_revenue = base_query.with_entities(
             func.coalesce(func.sum(SalesData.total_amount), 0)
-        ).filter(
-            SalesData.file_id.in_(file_ids)
         ).scalar()
 
         if "year" in entities:
@@ -70,6 +82,7 @@ def process_nlp_query(query: str, employee_id: int):
 
 
 
+    # ✅ 2. ORDERS
     elif intent == "orders":
 
         total_orders = base_query.count()
@@ -78,6 +91,7 @@ def process_nlp_query(query: str, employee_id: int):
 
 
 
+    # ✅ 3. TOP PRODUCTS (IMPROVED)
     elif intent == "top_products":
 
         limit = entities.get("limit", 5)
@@ -98,39 +112,50 @@ def process_nlp_query(query: str, employee_id: int):
         )
 
         if not results:
-            return "No product sales data available."
+            return "No product data available."
 
-        top_product = results[0]
+        response = f"Top {limit} products:\n"
+        for r in results:
+            response += f"{r[0]} → {int(r[1])}\n"
 
-        return f"Top product is {top_product[0]} with revenue {int(top_product[1])}."
+        return response
 
 
 
-    elif intent == "state_sales":
+    # ✅ 4. SALES BY LOCATION (CITY / STATE)
+    elif intent == "sales_by_location":
+
+        if "city" in query:
+            field = SalesData.city
+            label = "city"
+        else:
+            field = SalesData.state
+            label = "state"
 
         results = (
             base_query.with_entities(
-                SalesData.state,
+                field,
                 func.sum(SalesData.total_amount)
             )
             .filter(
-                SalesData.state.isnot(None),
-                SalesData.state != "Unknown"
+                field.isnot(None),
+                field != "Unknown"
             )
-            .group_by(SalesData.state)
+            .group_by(field)
             .order_by(func.sum(SalesData.total_amount).desc())
             .all()
         )
 
         if not results:
-            return "No state sales data available."
+            return f"No {label} sales data available."
 
-        top_state = results[0]
+        top = results[0]
 
-        return f"Highest sales state is {top_state[0]} with revenue {int(top_state[1])}."
+        return f"Highest sales {label} is {top[0]} with revenue {int(top[1])}."
 
 
 
+    # ✅ 5. PAYMENT MODE
     elif intent == "payment_mode":
 
         results = (
@@ -149,5 +174,33 @@ def process_nlp_query(query: str, employee_id: int):
         mode = results[0]
 
         return f"Most used payment mode is {mode[0]} with {mode[1]} transactions."
-    
-    return "I can only answer questions related to your sales data."
+
+
+
+    # ✅ 6. ONLINE vs OFFLINE SALES
+    elif intent == "sales_channel":
+
+        results = (
+            base_query.with_entities(
+                SalesData.channel,
+                func.sum(SalesData.total_amount)
+            )
+            .group_by(SalesData.channel)
+            .all()
+        )
+
+        if not results:
+            return "No channel data available."
+
+        response = "Sales by channel:\n"
+        for r in results:
+            response += f"{r[0]}: {int(r[1])}\n"
+
+        return response
+
+
+    # ----------------------------------------
+    # FALLBACK
+    # ----------------------------------------
+
+    return "Sorry, I couldn't understand your query. Try asking about revenue, products, or sales insights."
